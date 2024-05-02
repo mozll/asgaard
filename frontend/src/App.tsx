@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import './styles.css' // Import your global styles
+
 // other imports and components
 
 interface Test {
@@ -23,8 +24,9 @@ function App() {
             <table>
                 <thead>
                     <th className="bg-blue-500 text-red-500">ID</th>
-                    <th>Name</th>
+                    <th className="customStyle">Name</th>
                     <th>Email</th>
+                    <th>Games</th>
                 </thead>
                 <tbody>
                     {data.map((data, index) => (
