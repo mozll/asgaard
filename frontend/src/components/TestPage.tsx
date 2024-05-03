@@ -27,7 +27,6 @@ function TestPage() {
                     <th className="bg-blue-500 text-red-500">ID</th>
                     <th className="customStyle">Name</th>
                     <th>Email</th>
-                    <th>Games</th>
                 </thead>
                 <tbody>
                     {data.map((data, index) => (
