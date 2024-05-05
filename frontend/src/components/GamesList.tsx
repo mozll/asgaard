@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { getGamesList, Game } from '../../services/api-client' // Import as default export
+import { getGamesList, Game } from '../../services/api-client'
 import '../styles.css'
 
 function GamesList() {
