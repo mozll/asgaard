@@ -1,11 +1,22 @@
 import React from 'react'
 import '../../styles.css'
+import FooterMenu from './FooterMenu'
 
 function Footer() {
+    const navItems = [
+        { link: '/games', title: 'Games' },
+        { link: '/news', title: 'News' },
+        { link: '/faq', title: 'FAQ' },
+    ]
     return (
-        <div>
-            <h1>This is the FOOTER</h1>
-        </div>
+        <>
+            <FooterMenu navItems={navItems} />
+            <div className="bg-qDark100">
+                <p className="text-center my-8">
+                    Platform Questzing by Andreas for Bachelor Project
+                </p>
+            </div>
+        </>
     )
 }
 

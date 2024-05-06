@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage'
 import Footer from './components/Footer/Footer'
 import TestPage from './components/TestPage'
 import './styles.css' // Import your global styles
+import TopTagsBar from './components/Nav/TopTagsBar'
 
 // other imports and components
 
@@ -20,6 +21,7 @@ function App() {
     return (
         <>
             <Navbar navItems={navItems} />
+            <TopTagsBar />
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/games" element={<GamesList />} />
