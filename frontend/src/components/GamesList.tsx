@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { getGamesList, Game } from '../../services/api-client'
-import '../styles.css'
+import { getNewlyUpdatedGames, Game } from '../../services/api-client'
 
 function GamesList() {
     const [games, setGames] = useState<Game[]>([])
 
     useEffect(() => {
-        fetchGamesList()
+        fetchNewlyUpdatedGames()
     }, [])
 
-    const fetchGamesList = async () => {
+    const fetchNewlyUpdatedGames = async () => {
         try {
-            const gamesData = await getGamesList()
+            const gamesData = await getNewlyUpdatedGames()
             setGames(gamesData)
         } catch (error) {
             console.error('Error fetching games:', error)
@@ -23,7 +22,7 @@ function GamesList() {
             <h1 className="text-green-600 font-bold">Games List</h1>
             <ul>
                 {games.map((game) => (
-                    <li key={game.id}>{game.name}</li>
+                    <li key={game.id}>{game.title}</li>
                 ))}
             </ul>
         </div>

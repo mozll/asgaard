@@ -2,7 +2,20 @@
 module.exports = {
     content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
     theme: {
+        fontFamily: {
+            sans: ['Roboto', 'sans-serif'],
+        },
         extend: {
+            fontWeight: {
+                thin: 300,
+                normal: 400,
+                medium: 500,
+                semibold: 600,
+                bold: 700,
+                extrabold: 800,
+                black: 900,
+                light: 300,
+            },
             colors: {
                 qDark100: '#07051D',
                 qDark200: '#202032',

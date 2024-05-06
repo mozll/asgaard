@@ -13,7 +13,7 @@ interface NavbarProps {
 
 const Navbar = ({ navItems }: NavbarProps) => {
     return (
-        <div className="flex justify-between m-10">
+        <div className="flex justify-between mx-16 my-8">
             <NavLink to="/">
                 <img src={QuestzingLogo} alt="Questzing logo" />
             </NavLink>

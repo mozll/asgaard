@@ -24,3 +24,7 @@ nav .active {
     text-decoration: underline;
     text-underline-offset: 8px;
 }
+nav a:hover {
+    text-decoration: underline;
+    text-underline-offset: 8px;
+}

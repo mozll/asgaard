@@ -12,24 +12,33 @@ import nintendoIcon from '../../assets/nintendo-icon.png'
 
 import { FreeMode, Scrollbar } from 'swiper/modules'
 import GameCard from '../GameCard/GameCard'
+import { Game } from '../../../services/api-client'
 
-// interface SwiperContainerProps {
-//     className: string
-// }
+interface SwiperContainerProps {
+    games: Game[]
+}
 
-const SwiperContainer = () => {
+const SwiperContainer = ({ games }: SwiperContainerProps) => {
     const [slidesPerView, setSlidesPerView] = useState(4.5)
 
     useEffect(() => {
         const handleResize = () => {
             const screenWidth = window.innerWidth
 
-            if (screenWidth <= 768) {
+            if (screenWidth <= 480) {
+                setSlidesPerView(1.1)
+            } else if (screenWidth <= 640) {
+                setSlidesPerView(1.7)
+            } else if (screenWidth <= 768) {
                 setSlidesPerView(1.5)
             } else if (screenWidth <= 1024) {
-                setSlidesPerView(2.5)
+                setSlidesPerView(2.4)
+            } else if (screenWidth <= 1280) {
+                setSlidesPerView(3.3)
+            } else if (screenWidth <= 1536) {
+                setSlidesPerView(4.3)
             } else {
-                setSlidesPerView(3.5)
+                setSlidesPerView(5.3)
             }
         }
 
@@ -41,6 +50,7 @@ const SwiperContainer = () => {
             window.removeEventListener('resize', handleResize)
         }
     }, [])
+
     return (
         <Swiper
             slidesPerView={slidesPerView}
@@ -50,30 +60,17 @@ const SwiperContainer = () => {
             modules={[FreeMode, Scrollbar]}
             className="mySwiper"
         >
-            <SwiperSlide>
-                <GameCard />
-            </SwiperSlide>
-            <SwiperSlide>
-                <GameCard />
-            </SwiperSlide>
-            <SwiperSlide>
-                <GameCard />
-            </SwiperSlide>
-            <SwiperSlide>
-                <GameCard />
-            </SwiperSlide>
-            <SwiperSlide>
-                <GameCard />
-            </SwiperSlide>
-            <SwiperSlide>
-                <GameCard />
-            </SwiperSlide>
-            <SwiperSlide>
-                <GameCard />
-            </SwiperSlide>
-            <SwiperSlide>
-                <GameCard />
-            </SwiperSlide>
+            {games.map((game, index) => (
+                <SwiperSlide key={index}>
+                    <GameCard
+                        id={game.id}
+                        background_image={game.background_image}
+                        name={game.name}
+                        reviews_count={game.reviews_count}
+                        metacritic={game.metacritic}
+                    />
+                </SwiperSlide>
+            ))}
         </Swiper>
     )
 }
