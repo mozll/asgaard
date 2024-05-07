@@ -17,6 +17,8 @@
 body {
     background-color: #07051d;
     color: white;
+    max-width: 2000px;
+    margin: auto;
 }
 
 nav .active {

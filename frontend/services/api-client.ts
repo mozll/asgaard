@@ -10,6 +10,7 @@ export interface Game {
     ratings_count: number
     tags: Tag[]
     platforms: Platform[]
+    description?: string
 }
 interface Genre {
     games_count: number
@@ -101,7 +102,7 @@ export const getXboxGames = async () => {
                 key: RAWG_API_KEY,
                 platforms: 1, // Xbox platform ID
                 ordering: '-rating',
-                page_size: 25, // Limit to 10 games
+                page_size: 25,
                 exclude_additions: true, // Exclude DLC and expansions
             },
         })
@@ -138,7 +139,7 @@ export const getFeaturedGame = async () => {
         const response = await axiosInstance.get('/games', {
             params: {
                 key: RAWG_API_KEY,
-                page_size: 100, // Fetch a larger set of games
+                page_size: 50, // Fetch a larger set of games
                 ratings: '>4.5',
             },
         })
@@ -147,7 +148,24 @@ export const getFeaturedGame = async () => {
         const randomIndex = Math.floor(
             Math.random() * response.data.results.length
         )
-        return response.data.results[randomIndex]
+
+        const gameId = response.data.results[randomIndex].id
+        console.log('FEATURE', response.data.results[randomIndex])
+
+        // Call the api to get the description based on the game ID
+        const getDescription = await axiosInstance.get(`/games/${gameId}`, {
+            params: {
+                key: RAWG_API_KEY,
+            },
+        })
+
+        const description = getDescription.data.description
+
+        // Return the selected game along with the description
+        return {
+            ...response.data.results[randomIndex],
+            description: description,
+        }
     } catch (error) {
         throw new Error('Error fetching featured game: ' + error)
     }
