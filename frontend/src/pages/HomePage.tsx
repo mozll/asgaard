@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import '../styles.css' // Import your global styles
-import Sidebar from '../components/Sidebar/Sidebar'
+
 import SwiperContainer from '../components/SwiperContainer/SwiperContainer'
 import FeaturedGameCard from '../components/GameCard/FeaturedGameCard'
-import GameCard from '../components/GameCard/GameCard'
-import skyrimImage from '../assets/skyrim.png'
+
 import {
     Game,
     getTopMetacriticGames,
@@ -16,78 +15,12 @@ import {
 
 // other imports and components
 
-interface Test {
-    user_name: string
-    user_id: number
-    user_email: string
-}
-
 const HomePage = () => {
-    // const games = [
-    //     {
-    //         id: 1,
-    //         gameImg: skyrimImage,
-    //         title: 'The Elder Scrolls V Skyrim',
-    //         numberOfCritics: 'X',
-    //         metacriticScore: '70',
-    //     },
-    //     {
-    //         id: 2,
-    //         gameImg: skyrimImage,
-    //         title: 'Fallout',
-    //         numberOfCritics: 'X',
-    //         metacriticScore: '80',
-    //     },
-    //     {
-    //         id: 3,
-    //         gameImg: skyrimImage,
-    //         title: 'Animal Crossing',
-    //         numberOfCritics: 'X',
-    //         metacriticScore: '65',
-    //     },
-    //     {
-    //         id: 4,
-    //         gameImg: skyrimImage,
-    //         title: 'God of War',
-    //         numberOfCritics: 'X',
-    //         metacriticScore: '55',
-    //     },
-    //     {
-    //         id: 5,
-    //         gameImg: skyrimImage,
-    //         title: 'God of War',
-    //         numberOfCritics: 'X',
-    //         metacriticScore: '55',
-    //     },
-    //     {
-    //         id: 6,
-    //         gameImg: skyrimImage,
-    //         title: 'God of War',
-    //         numberOfCritics: 'X',
-    //         metacriticScore: '55',
-    //     },
-    // ]
-
-    // const [games, setGames] = useState<Game[]>([])
-
-    // useEffect(() => {
-    //     fetchNewlyUpdatedGames()
-    // }, [])
-
-    // const fetchNewlyUpdatedGames = async () => {
-    //     try {
-    //         const gamesData = await getNewlyUpdatedGames()
-    //         setGames(gamesData)
-    //     } catch (error) {
-    //         console.error('Error fetching games:', error)
-    //     }
-    // }
-
     const [topMetacriticGames, setTopMetacriticGames] = useState<Game[]>([])
     const [popularGames, setPopularGames] = useState<Game[]>([])
     const [xboxGames, setXboxGames] = useState<Game[]>([])
     const [smartphoneGames, setSmartphoneGames] = useState<Game[]>([])
-    const [featuredGame, setFeaturedGame] = useState<Game[]>([])
+    const [featuredGame, setFeaturedGame] = useState<Game | null>(null)
 
     useEffect(() => {
         fetchTopMetacriticGames()
@@ -160,21 +93,10 @@ const HomePage = () => {
             <SwiperContainer games={popularGames} />
             {featuredGame && (
                 <div className="hidden md:block">
-                    <FeaturedGameCard
-                        id={0}
-                        background_image={''}
-                        name={''}
-                        reviews_count={''}
-                        metacritic={''}
-                        genres={[]}
-                        ratings_count={0}
-                        tags={[]}
-                        platforms={[]}
-                        {...featuredGame}
-                    />
+                    <FeaturedGameCard {...featuredGame} />
                 </div>
             )}
-            <h1 className="mt-8 font-bold">Xbox Exclusives</h1>
+            <h1 className="mt-8 font-bold">Best Rated Xbox Games</h1>
 
             <SwiperContainer games={xboxGames} />
             <h1 className="mt-8 font-bold">Smartphone Hits</h1>
