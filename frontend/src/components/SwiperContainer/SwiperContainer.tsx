@@ -4,11 +4,6 @@ import 'swiper/css'
 import 'swiper/css/free-mode'
 import 'swiper/css/scrollbar'
 import 'swiper/css'
-import skyrimImage from '../../assets/skyrim.png'
-import pcIcon from '../../assets/pc-icon.png'
-import xboxIcon from '../../assets/xbox-icon.png'
-import playstationIcon from '../../assets/playstation-icon.png'
-import nintendoIcon from '../../assets/nintendo-icon.png'
 
 import { FreeMode, Scrollbar } from 'swiper/modules'
 import GameCard from '../GameCard/GameCard'
@@ -68,6 +63,10 @@ const SwiperContainer = ({ games }: SwiperContainerProps) => {
                         name={game.name}
                         reviews_count={game.reviews_count}
                         metacritic={game.metacritic}
+                        genres={game.genres}
+                        ratings_count={game.ratings_count}
+                        tags={game.tags}
+                        platforms={game.platforms}
                     />
                 </SwiperSlide>
             ))}
