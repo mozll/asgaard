@@ -24,11 +24,13 @@ const PlatformIcons: React.FC<PlatformIconsProps> = ({ platformNames }) => {
             )}
             {(platformNames.includes('Xbox One') ||
                 platformNames.includes('Xbox Series X') ||
-                platformNames.includes('Xbox Series S')) && (
+                platformNames.includes('Xbox Series S') ||
+                platformNames.includes('Xbox Series S/X')) && (
                 <img src={xboxIcon} alt="Xbox icon" className="w-6 h-6" />
             )}
             {(platformNames.includes('PlayStation 3') ||
-                platformNames.includes('PlayStation 4')) && (
+                platformNames.includes('PlayStation 4') ||
+                platformNames.includes('PlayStation 5')) && (
                 <img
                     src={playstation4Icon}
                     alt="PlayStation icon"
