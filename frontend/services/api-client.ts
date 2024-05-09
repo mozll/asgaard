@@ -12,6 +12,54 @@ export interface Game {
     platforms: Platform[]
     description?: string
 }
+
+export interface GameDetails extends Game {
+    description_raw: string
+    developers: Developers[]
+    publishers: Publishers[]
+    released: string
+    esrb_rating: esrb_rating
+    screenshots: Screenshot[]
+    stores: Store[]
+    reddit_url: string
+    website: string
+}
+
+interface esrb_rating {
+    id: number
+    name: string
+    slug: string
+}
+
+interface Screenshot {
+    height: number
+    id: number
+    image: string
+    is_deleted: boolean
+    width: number
+}
+interface Store {
+    game_id: number
+    id: number
+    store_id: number
+    url: string
+}
+
+interface Developers {
+    games_count?: string
+    id: string
+    image_background: string
+    name: string
+    slug: string
+}
+interface Publishers {
+    games_count?: string
+    id: string
+    image_background: string
+    name: string
+    slug: string
+}
+
 interface Genre {
     games_count: number
     id: number
@@ -28,6 +76,7 @@ interface Tag {
 }
 
 interface Platform {
+    name: string
     platform: {
         id: number
         name: string
@@ -159,7 +208,7 @@ export const getFeaturedGame = async () => {
             },
         })
 
-        const description = getDescription.data.description
+        const description = getDescription.data.description_raw
 
         // Return the selected game along with the description
         return {
@@ -168,5 +217,58 @@ export const getFeaturedGame = async () => {
         }
     } catch (error) {
         throw new Error('Error fetching featured game: ' + error)
+    }
+}
+
+export const getAllGameData = async (gameId: string) => {
+    try {
+        // First, fetch the game data
+        const gameResponse = await axiosInstance.get(`/games/${gameId}`, {
+            params: {
+                key: RAWG_API_KEY,
+            },
+        })
+
+        // Extract the necessary data from the game response
+        const gameData = gameResponse.data
+
+        // Next, fetch the screenshots of the game
+        const screenshotsResponse = await axiosInstance.get(
+            `/games/${gameId}/screenshots`,
+            {
+                params: {
+                    key: RAWG_API_KEY,
+                },
+            }
+        )
+        const storesResponse = await axiosInstance.get(
+            `/games/${gameId}/stores`,
+            {
+                params: {
+                    key: RAWG_API_KEY,
+                },
+            }
+        )
+
+        // Extract the screenshots data
+        const screenshots = screenshotsResponse.data.results
+        const limitedScreenshots = screenshots.slice(0, 5)
+        // Extract the stores data
+        const stores = storesResponse.data.results
+        const limitedStores = stores.slice(0, 5)
+
+        // Combine the game data with the screenshots data
+        const combinedData = {
+            ...gameData,
+            screenshots: limitedScreenshots,
+            stores: limitedStores,
+        }
+
+        // Return the combined data
+        console.log('COMBINED DATA************', combinedData)
+        return combinedData
+    } catch (error) {
+        console.error('Error fetching game data:', error)
+        throw error
     }
 }

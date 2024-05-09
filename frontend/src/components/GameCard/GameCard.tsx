@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { Game } from '../../../services/api-client'
 import defaultImage from '../../assets/default-image-icon-missing-picture-page-vector-40546530.jpg'
 import PlatformIcons from './PlatformIcons'
@@ -30,12 +31,14 @@ const GameCard = ({
                     : 'border-qSecondary400'
             } `}
         >
-            <img
-                src={background_image ? background_image : defaultImage}
-                alt="skyrim image"
-                className="w-full h-48 object-cover"
-            />
-            <h4 className="text-xl font-bold mx-2 truncate">{name}</h4>
+            <Link to={`/game/${id}`}>
+                <img
+                    src={background_image ? background_image : defaultImage}
+                    alt="skyrim image"
+                    className="w-full h-48 object-cover rounded-t-md"
+                />
+                <h4 className="text-xl font-bold mx-2 truncate">{name}</h4>
+            </Link>
             <div className="mx-2">
                 <PlatformIcons platformNames={platformNames} />
             </div>

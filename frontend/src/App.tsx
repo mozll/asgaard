@@ -8,6 +8,7 @@ import Footer from './components/Footer/Footer'
 import TestPage from './components/TestPage'
 import './styles.css' // Import your global styles
 import TopTagsBar from './components/Nav/TopTagsBar'
+import GamePage from './pages/GamePage'
 
 // other imports and components
 
@@ -42,7 +43,7 @@ function App() {
                     }
                 />
                 <Route path="/genres" element={<GenresList />} />
-                <Route path="/test" element={<TestPage />} />
+                <Route path="/game/:id" element={<GamePage />} />
             </Routes>
             <Footer />
         </>
