@@ -93,7 +93,6 @@ const axiosInstance = axios.create({
 export const getGamesList = async () => {
     try {
         const response = await axiosInstance.get(`/games?key=${RAWG_API_KEY}`)
-        console.log(response)
         return response.data.results
     } catch (error) {
         throw new Error('Error fetching games: ' + error)
@@ -111,10 +110,6 @@ export const getTopMetacriticGames = async () => {
         response.data.results = response.data.results.filter(
             (game: Game) => parseInt(game.reviews_count) > 0
         )
-        console.log(
-            'RESPONSE FROM getTopMetacriticGames ',
-            response.data.results
-        )
         return response.data.results
     } catch (error) {
         throw new Error('Error fetching top metacritic games: ' + error)
@@ -129,7 +124,6 @@ export const getPopularGames = async () => {
                 page_size: 20, // Limit to 25 games
             },
         })
-        console.log('Popular games ', response.data.results)
         return response.data.results
     } catch (error) {
         throw new Error('Error fetching popular games: ' + error)
@@ -160,8 +154,6 @@ export const getXboxGames = async () => {
 
             return game.ratings_count >= minReviewsCount
         })
-
-        console.log('RESPONSE FROM getXboxGames ', response.data.results)
         return response.data.results
     } catch (error) {
         throw new Error('Error fetching Xbox games: ' + error)
@@ -176,7 +168,6 @@ export const getSmartphoneGames = async () => {
                 platforms: '21,3', // Include platform IDs for Android (21) and iOS (3)
             },
         })
-        console.log('RESPONSE FROM getSmartphoneGames ', response.data.results)
         return response.data.results
     } catch (error) {
         throw new Error('Error fetching smartphone games: ' + error)
@@ -199,7 +190,6 @@ export const getFeaturedGame = async () => {
         )
 
         const gameId = response.data.results[randomIndex].id
-        console.log('FEATURE', response.data.results[randomIndex])
 
         // Call the api to get the description based on the game ID
         const getDescription = await axiosInstance.get(`/games/${gameId}`, {
@@ -265,7 +255,7 @@ export const getAllGameData = async (gameId: string) => {
         }
 
         // Return the combined data
-        console.log('COMBINED DATA************', combinedData)
+
         return combinedData
     } catch (error) {
         console.error('Error fetching game data:', error)

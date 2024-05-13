@@ -30,7 +30,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(
   session({
-    key: "nameOfCookie",
+    key: "nameOfCookieThatStoresSessionID",
     secret: "longRandomHash",
     resave: false,
     saveUninitialized: false,
@@ -76,14 +76,6 @@ app.post("/register", (req, res) => {
   });
 });
 
-app.get("/login", (req, res) => {
-  if (req.session.user) {
-    res.send({ loggedIn: true, user: req.session.user });
-  } else {
-    res.send({ loggedIn: false });
-  }
-});
-
 app.post("/login", (req, res) => {
   const user_name = req.body.user_name;
   const user_password = req.body.user_password;
@@ -95,16 +87,18 @@ app.post("/login", (req, res) => {
       if (err) {
         res.send({ err: err });
       }
-
       if (result.length > 0) {
         bcrypt.compare(
           user_password,
           result[0].user_password,
           (error, response) => {
             if (response) {
-              req.session.user = result;
-              console.log(req.session.user);
-              res.send(result);
+              req.session.user = {
+                id: result[0].user_id,
+                name: result[0].user_name,
+                email: result[0].user_email,
+              };
+              res.send({ message: "Login successful", user: req.session.user });
             } else {
               res.send({ message: "Wrong username/password combo!" });
             }
@@ -115,4 +109,17 @@ app.post("/login", (req, res) => {
       }
     }
   );
+});
+
+app.post("/logout", (req, res) => {
+  req.session.destroy(); // Destroy the session on logout
+  res.sendStatus(200); // Or send a success message
+});
+
+app.get("/user", (req, res) => {
+  if (req.session.user) {
+    res.send({ loggedIn: true, user: req.session.user });
+  } else {
+    res.send({ loggedIn: false });
+  }
 });
