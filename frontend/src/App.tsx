@@ -9,6 +9,8 @@ import TestPage from './components/TestPage'
 import './styles.css' // Import your global styles
 import TopTagsBar from './components/Nav/TopTagsBar'
 import GamePage from './pages/GamePage'
+import SignUpPage from './pages/SignUpPage'
+import LoginPage from './pages/LoginPage'
 
 // other imports and components
 
@@ -22,7 +24,7 @@ function App() {
     return (
         <>
             <Navbar navItems={navItems} />
-            <TopTagsBar />
+
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/games" element={<GamesList />} />
@@ -43,6 +45,8 @@ function App() {
                     }
                 />
                 <Route path="/genres" element={<GenresList />} />
+                <Route path="/signup" element={<SignUpPage />} />
+                <Route path="/login" element={<LoginPage />} />
                 <Route path="/game/:id" element={<GamePage />} />
             </Routes>
             <Footer />

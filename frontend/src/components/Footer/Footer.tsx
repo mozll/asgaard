@@ -9,14 +9,14 @@ function Footer() {
         { link: '/faq', title: 'FAQ' },
     ]
     return (
-        <>
+        <div className="">
             <FooterMenu navItems={navItems} />
             <div className="bg-qDark100">
                 <p className="text-center my-8">
                     Platform Questzing by Andreas for Bachelor Project
                 </p>
             </div>
-        </>
+        </div>
     )
 }
 

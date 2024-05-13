@@ -12,6 +12,7 @@ import {
     getPopularGames,
     getFeaturedGame,
 } from '../../services/api-client'
+import TopTagsBar from '../components/Nav/TopTagsBar'
 
 // other imports and components
 
@@ -85,24 +86,27 @@ const HomePage = () => {
     }
 
     return (
-        <div className="ml-16">
-            <h1 className="mt-8 font-bold">Highest Rated On Metacritic</h1>
-            <SwiperContainer games={topMetacriticGames} />
+        <>
+            <TopTagsBar />
+            <div className="ml-16">
+                <h1 className="mt-8 font-bold">Highest Rated On Metacritic</h1>
+                <SwiperContainer games={topMetacriticGames} />
 
-            <h1 className="mt-8 font-bold">Popular games & DLC</h1>
-            <SwiperContainer games={popularGames} />
-            {featuredGame && (
-                <div className="hidden md:block">
-                    <FeaturedGameCard {...featuredGame} />
-                </div>
-            )}
-            <h1 className="mt-8 font-bold">Best Rated Xbox Games</h1>
+                <h1 className="mt-8 font-bold">Popular games & DLC</h1>
+                <SwiperContainer games={popularGames} />
+                {featuredGame && (
+                    <div className="hidden md:block">
+                        <FeaturedGameCard {...featuredGame} />
+                    </div>
+                )}
+                <h1 className="mt-8 font-bold">Best Rated Xbox Games</h1>
 
-            <SwiperContainer games={xboxGames} />
-            <h1 className="mt-8 font-bold">Smartphone Hits</h1>
+                <SwiperContainer games={xboxGames} />
+                <h1 className="mt-8 font-bold">Smartphone Hits</h1>
 
-            <SwiperContainer games={smartphoneGames} />
-        </div>
+                <SwiperContainer games={smartphoneGames} />
+            </div>
+        </>
     )
 }
 
