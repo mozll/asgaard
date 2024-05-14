@@ -98,6 +98,36 @@ export const getGamesList = async () => {
         throw new Error('Error fetching games: ' + error)
     }
 }
+
+export const getGameGenreList = async (genreSlug: string) => {
+    try {
+        const response = await axiosInstance.get(
+            `/games?genres=${genreSlug}&key=${RAWG_API_KEY}&page_size=40`
+        )
+        return response.data.results // Assuming the API returns game results
+    } catch (error) {
+        console.error('Error fetching games by genre:', error)
+        throw error
+    }
+}
+
+export const getGenres = async () => {
+    try {
+        const response = await axiosInstance.get(
+            `/genres?key=${RAWG_API_KEY}`,
+            {}
+        )
+        const genreNames = response.data.results.map(
+            (genre: { name: string }) => genre.name
+        )
+
+        return genreNames
+    } catch (error) {
+        console.error('Error fetching genres:', error)
+        throw error // Re-throw the error to handle it in your component
+    }
+}
+
 export const getTopMetacriticGames = async () => {
     try {
         const response = await axiosInstance.get('/games', {

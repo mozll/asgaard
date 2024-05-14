@@ -11,11 +11,14 @@ import GamePage from './pages/GamePage'
 import SignUpPage from './pages/SignUpPage'
 import LoginPage from './pages/LoginPage'
 import './styles.css' // Import your global styles
+import ProfilePage from './pages/ProfilePage'
+import GameGenreList from './components/GameGenreList.tsx/GameGenreList'
 
 export interface User {
     id: number
     name: string
     email: string
+    img: string
 }
 
 export const AuthContext = createContext({
@@ -28,7 +31,7 @@ function App() {
     const [user, setUser] = useState<User | null>(null)
 
     const navItems = [
-        { link: '/games', title: 'Games' },
+        { link: '/', title: 'Games' },
         { link: '/news', title: 'News' },
         { link: '/faq', title: 'FAQ' },
     ]
@@ -59,12 +62,17 @@ function App() {
 
             <Routes>
                 <Route path="/" element={<HomePage />} />
-                <Route path="/games" element={<GamesList />} />
                 <Route
                     path="/news"
                     element={
                         <div>
-                            <h1>News</h1>
+                            <h2 className="flex justify-center text-xl">
+                                News Page Coming Soon!
+                            </h2>
+                            <p className="flex justify-center mt-4">
+                                This feature is currently under development and
+                                will be available soon. Please check back later!
+                            </p>
                         </div>
                     }
                 />
@@ -72,7 +80,14 @@ function App() {
                     path="/faq"
                     element={
                         <div>
-                            <h1>FAQ</h1>
+                            <h2 className="flex justify-center text-xl">
+                                {' '}
+                                FAQ Page Coming Soon!
+                            </h2>
+                            <p className="flex justify-center mt-4">
+                                This feature is currently under development and
+                                will be available soon. Please check back later!
+                            </p>
                         </div>
                     }
                 />
@@ -80,6 +95,8 @@ function App() {
                 <Route path="/signup" element={<SignUpPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/game/:id" element={<GamePage />} />
+                <Route path="/profile" element={<ProfilePage user={user} />} />
+                <Route path="/genre/:genreSlug" element={<GameGenreList />} />
             </Routes>
             <Footer />
         </AuthContext.Provider>

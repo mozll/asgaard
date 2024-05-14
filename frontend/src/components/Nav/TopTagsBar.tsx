@@ -1,5 +1,5 @@
 import React from 'react'
-
+/* 
 const TopTagsBar = () => {
     const handleTagClick = (tagName) => {
         // Trigger search with the selected tag
@@ -107,6 +107,57 @@ const TopTagsBar = () => {
                     </button>
                 </li>
             </ul>
+        </div>
+    )
+} */
+import { useEffect, useState } from 'react'
+import { getGenres } from '../../../services/api-client'
+import { useNavigate } from 'react-router-dom'
+
+const TopTagsBar = () => {
+    const [genres, setGenres] = useState<string[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const navigate = useNavigate()
+
+    const handleTagClick = (genreName: string) => {
+        const genreSlug = genreName.toLowerCase().replace(/ /g, '-') // Convert genre name to slug format
+        navigate(`/genre/${genreSlug}`)
+    }
+
+    useEffect(() => {
+        const fetchGenresData = async () => {
+            try {
+                const fetchedGenres = await getGenres() // Call  getGenres function from api-client
+                setGenres(fetchedGenres) // Update genres state with fetched data
+            } catch (error) {
+                console.error('Error fetching genres:', error)
+                setGenres(['Action', 'Adventure', 'RPG']) // Fallback genres
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        fetchGenresData() // Call the function to fetch genres
+    }, []) // Runs once since empty
+
+    return (
+        <div>
+            {isLoading ? (
+                <div>Loading genres...</div>
+            ) : (
+                <ul className="justify-center font-light flex flex-wrap lg:mx-64 mx-20">
+                    {genres.map((genre) => (
+                        <li key={genre} className="flex items-center mr-4 mb-2">
+                            <button
+                                onClick={() => handleTagClick(genre)}
+                                className="text-xs bg-qDark300 p-2 rounded-xl hover:bg-qDark400 transition-colors"
+                            >
+                                {genre}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     )
 }
