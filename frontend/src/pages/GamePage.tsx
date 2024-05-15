@@ -113,7 +113,7 @@ const GamePage = () => {
                     <div className="screenshot-container sm:flex gap-2  mt-4">
                         {gameDetails.screenshots.map((screenshot) => (
                             <img
-                                className="sm:flex-grow sm:object-cover sm:w-28 sm:h-auto rounded-lg mt-4"
+                                className="sm:flex-grow sm:object-cover sm:w-28 sm:h-auto rounded-lg mt-4 transform transition duration-300 hover:scale-110"
                                 key={screenshot.id}
                                 src={screenshot.image}
                                 alt="Screenshot"
@@ -210,7 +210,9 @@ const GamePage = () => {
                                 </li>
 
                                 <li className="">
-                                    ESRB Rating: {gameDetails.esrb_rating.name}
+                                    ESRB:{' '}
+                                    {gameDetails?.esrb_rating?.name ||
+                                        'Not Rated'}
                                 </li>
 
                                 <ul>

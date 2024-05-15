@@ -1,44 +1,55 @@
 import axios from 'axios'
-import React, { useEffect, useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { useContext, useState } from 'react'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { AuthContext } from '../App'
 
 const LoginPage = () => {
+    const navigate = useNavigate()
+    const { setLoggedIn } = useContext(AuthContext)
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
 
-    const [loginStatus, setLoginStatus] = useState('')
+    const [loginMessage, setLoginMessage] = useState('')
 
     // Set withCredentials to true globally for all Axios requests
     axios.defaults.withCredentials = true
 
-    const login = () => {
-        axios
-            .post('http://localhost:8081/login', {
-                user_name: username,
-                user_password: password,
-            })
-            .then((response) => {
-                if (response.data.message) {
-                    setLoginStatus(response.data.message)
-                } else {
-                    setLoginStatus(response.data[0].user_name)
+    const login = async () => {
+        try {
+            const response = await axios.post(
+                'http://localhost:8081/login',
+                {
+                    user_name: username,
+                    user_password: password,
+                },
+                {
+                    withCredentials: true,
                 }
-            })
-            .catch((error) => {
+            )
+
+            // If login is successful set setLoggedIn to true, which will be stored/remembered in the AuthContext
+            if (response.data.message === 'Login successful') {
+                setLoggedIn(true)
+                navigate('/')
+            } else {
+                setLoginMessage(response?.data?.message || 'Login failed')
+                setLoggedIn(false)
+            }
+            // All error cases will be handled in the catch block
+        } catch (error: any) {
+            if (axios.isAxiosError(error) && error.response) {
+                setLoginMessage(error.response?.data?.message || 'Login failed')
+            } else {
                 console.error('Error during login:', error)
-            })
+                setLoginMessage(
+                    'An unexpected error occurred. Please try again.'
+                )
+            }
+        }
     }
 
-    useEffect(() => {
-        axios.get('http://localhost:8081/login').then((response) => {
-            if (response.data.loggedIn == true) {
-                setLoginStatus(response.data.user[0].user_name)
-            }
-        })
-    }, [])
-
     return (
-        <div className="">
+        <div>
             <div className="flex justify-center bg-qDark200 mx-auto mt-32 w-2/5 rounded-lg">
                 <div className="flex flex-col justify-center py-20 ">
                     <form
@@ -84,7 +95,7 @@ const LoginPage = () => {
                     </div>
                 </div>
             </div>
-            <h1>{loginStatus}</h1>
+            <h1>{loginMessage}</h1>
         </div>
     )
 }

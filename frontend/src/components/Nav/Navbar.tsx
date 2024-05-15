@@ -1,4 +1,9 @@
 import { NavLink } from 'react-router-dom'
+
+// Interface
+import { User } from '../../App'
+
+// assets and styles
 import QuestzingLogo from '../../assets/Questzing.svg'
 import '../../styles.css'
 
@@ -9,9 +14,10 @@ interface NavItems {
 
 interface NavbarProps {
     navItems: NavItems[]
+    user: User | null
 }
 
-const Navbar = ({ navItems }: NavbarProps) => {
+const Navbar = ({ navItems, user }: NavbarProps) => {
     return (
         <div className="flex justify-between mx-16 my-8">
             <NavLink to="/">
@@ -27,9 +33,17 @@ const Navbar = ({ navItems }: NavbarProps) => {
                 </nav>
                 <button className="text-lg">GQ</button>
             </div>
-            <NavLink to="/login" className="text-lg">
-                Login
-            </NavLink>
+
+            {user ? (
+                // to="/profile/${user.id}" if access to other user profiles neccessary
+                <NavLink to="/profile" className="text-lg">
+                    {user.name}
+                </NavLink>
+            ) : (
+                <NavLink to="/login" className="text-lg">
+                    Login
+                </NavLink>
+            )}
         </div>
     )
 }

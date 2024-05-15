@@ -92,28 +92,61 @@ const axiosInstance = axios.create({
 
 export const getGamesList = async () => {
     try {
-        const response = await axiosInstance.get(`/games?key=${RAWG_API_KEY}`)
-        console.log(response)
+        const response = await axiosInstance.get('/games', {
+            params: {
+                key: RAWG_API_KEY,
+            },
+        })
         return response.data.results
     } catch (error) {
         throw new Error('Error fetching games: ' + error)
     }
 }
+
+export const getGameGenreList = async (genreSlug: string) => {
+    try {
+        const response = await axiosInstance.get('/games', {
+            params: {
+                genres: genreSlug,
+                key: RAWG_API_KEY,
+                page_size: 40,
+            },
+        })
+        return response.data.results // Assuming the API returns game results
+    } catch (error) {
+        console.error('Error fetching games by genre:', error)
+        throw error
+    }
+}
+
+export const getGenres = async () => {
+    try {
+        const response = await axiosInstance.get('/genres', {
+            params: { key: RAWG_API_KEY },
+        })
+
+        const genreNames = response.data.results.map(
+            (genre: { name: string }) => genre.name
+        )
+
+        return genreNames
+    } catch (error) {
+        console.error('Error fetching genres:', error)
+        throw error
+    }
+}
+
 export const getTopMetacriticGames = async () => {
     try {
         const response = await axiosInstance.get('/games', {
             params: {
                 key: RAWG_API_KEY,
                 ordering: '-metacritic',
-                page_size: 25, // Limit to 10 games
+                page_size: 25,
             },
         })
         response.data.results = response.data.results.filter(
             (game: Game) => parseInt(game.reviews_count) > 0
-        )
-        console.log(
-            'RESPONSE FROM getTopMetacriticGames ',
-            response.data.results
         )
         return response.data.results
     } catch (error) {
@@ -125,11 +158,10 @@ export const getPopularGames = async () => {
         const response = await axiosInstance.get('/games', {
             params: {
                 key: RAWG_API_KEY,
-                ordering: '-rating_count', // You can change this to other metrics like '-ratings_count'
-                page_size: 20, // Limit to 25 games
+                ordering: '-rating_count',
+                page_size: 20,
             },
         })
-        console.log('Popular games ', response.data.results)
         return response.data.results
     } catch (error) {
         throw new Error('Error fetching popular games: ' + error)
@@ -144,6 +176,7 @@ export const getGenresList = async () => {
         throw new Error('Error fetching genres: ' + error)
     }
 }
+
 export const getXboxGames = async () => {
     try {
         const response = await axiosInstance.get('/games', {
@@ -160,8 +193,6 @@ export const getXboxGames = async () => {
 
             return game.ratings_count >= minReviewsCount
         })
-
-        console.log('RESPONSE FROM getXboxGames ', response.data.results)
         return response.data.results
     } catch (error) {
         throw new Error('Error fetching Xbox games: ' + error)
@@ -176,7 +207,6 @@ export const getSmartphoneGames = async () => {
                 platforms: '21,3', // Include platform IDs for Android (21) and iOS (3)
             },
         })
-        console.log('RESPONSE FROM getSmartphoneGames ', response.data.results)
         return response.data.results
     } catch (error) {
         throw new Error('Error fetching smartphone games: ' + error)
@@ -199,7 +229,6 @@ export const getFeaturedGame = async () => {
         )
 
         const gameId = response.data.results[randomIndex].id
-        console.log('FEATURE', response.data.results[randomIndex])
 
         // Call the api to get the description based on the game ID
         const getDescription = await axiosInstance.get(`/games/${gameId}`, {
@@ -255,7 +284,7 @@ export const getAllGameData = async (gameId: string) => {
         const limitedScreenshots = screenshots.slice(0, 5)
         // Extract the stores data
         const stores = storesResponse.data.results
-        const limitedStores = stores.slice(0, 5)
+        const limitedStores = stores.slice(0, 10)
 
         // Combine the game data with the screenshots data
         const combinedData = {
@@ -265,7 +294,7 @@ export const getAllGameData = async (gameId: string) => {
         }
 
         // Return the combined data
-        console.log('COMBINED DATA************', combinedData)
+
         return combinedData
     } catch (error) {
         console.error('Error fetching game data:', error)
