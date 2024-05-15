@@ -76,7 +76,6 @@ interface Tag {
 }
 
 interface Platform {
-    name: string
     platform: {
         id: number
         name: string
@@ -103,16 +102,36 @@ export const getGamesList = async () => {
     }
 }
 
-export const getGameGenreList = async (genreSlug: string) => {
+// Search game api. get query from the users input in search bar
+export const searchGames = async (query: string) => {
+    try {
+        const response = await axiosInstance.get('/games', {
+            params: {
+                key: RAWG_API_KEY,
+                search: query,
+            },
+        })
+        console.log('this is a search result', response.data.results)
+        return response.data.results
+    } catch (error) {
+        throw new Error('Error searching games: ' + error)
+    }
+}
+
+export const getGameGenreList = async (
+    genreSlug: string,
+    platformId?: string
+) => {
     try {
         const response = await axiosInstance.get('/games', {
             params: {
                 genres: genreSlug,
+                platform: platformId,
                 key: RAWG_API_KEY,
                 page_size: 40,
             },
         })
-        return response.data.results // Assuming the API returns game results
+        return response.data.results
     } catch (error) {
         console.error('Error fetching games by genre:', error)
         throw error
@@ -132,6 +151,27 @@ export const getGenres = async () => {
         return genreNames
     } catch (error) {
         console.error('Error fetching genres:', error)
+        throw error
+    }
+}
+
+export const getPlatforms = async () => {
+    try {
+        const response = await axiosInstance.get('/platforms', {
+            params: { key: RAWG_API_KEY },
+        })
+
+        const platformNames = response.data.results.map(
+            (platform: { id: string; name: string; slug: string }) => ({
+                id: platform.id,
+                name: platform.name,
+                slug: platform.slug,
+            })
+        )
+
+        return platformNames
+    } catch (error) {
+        console.error('Error fetching platforms:', error)
         throw error
     }
 }
