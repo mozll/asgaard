@@ -41,7 +41,7 @@ const TopTagsBar = () => {
                     <li key={genre} className="flex items-center mr-4 mb-2">
                         <button
                             onClick={() => handleTagClick(genre)}
-                            className={`text-xs bg-qDark300 p-2 rounded-xl hover:bg-qPrimary300  hover:text-qDark200 transition-colors ${
+                            className={`text-xs bg-qDark300 p-2 rounded-xl hover:bg-qPrimary300 font-normal hover:text-qDark200 transition-colors ${
                                 genre.toLowerCase().replace(/ /g, '-') ===
                                 activeGenre
                                     ? 'bg-qPrimary300 text-qDark200 font-normal transform scale-110'

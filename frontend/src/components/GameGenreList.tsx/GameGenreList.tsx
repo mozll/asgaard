@@ -43,7 +43,7 @@ const GameGenreList = () => {
                     <h1 className="ml-16 mt-10 font-bold text-lg">
                         Results for "{genreSlug}"
                     </h1>{' '}
-                    <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 mx-16">
+                    <ul className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 mt-4 mx-16">
                         {games.map((game) => (
                             <GameCard
                                 id={game.id}
