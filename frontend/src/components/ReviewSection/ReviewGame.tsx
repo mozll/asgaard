@@ -1,32 +1,60 @@
 import React, { useState, FormEvent, ChangeEvent } from 'react'
+import axios from 'axios'
+import Review from './Review'
 
-const ReviewGame: React.FC = () => {
+interface ReviewGameProps {
+    gameId: number
+}
+
+const ReviewGame = ({ gameId }: ReviewGameProps) => {
     const [review, setReview] = useState<string>('')
+    const [thumbs, setThumbs] = useState<string>('neutral')
     const [borderColor, setBorderColor] = useState('green')
 
     const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
         setReview(event.target.value)
     }
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        // Here you can add code to submit the review, such as sending it to a backend server
-        console.log('Review submitted:', review)
-        // You can also clear the review text area after submission
-        setReview('')
+
+        try {
+            const response = await axios.post(
+                `http://localhost:8081/api/games/${gameId}/reviews`,
+                {
+                    review,
+                    thumbs,
+                }
+            )
+
+            if (response.status === 201) {
+                // Cleanup textarea after successful submit
+                setReview('')
+                setThumbs('neutral')
+                setBorderColor('white')
+            } else {
+                console.error('Failed to submit review:', response.statusText)
+                // Handle errors (display an error message, etc.)
+            }
+        } catch (error) {
+            console.error('Error submitting review:', error)
+            // Handle network errors (display an error message, etc.)
+        }
     }
 
     const handleThumbsUpClick = () => {
         setBorderColor('qPrimary100')
-        console.log('should be green')
+        setThumbs('thumbsUp')
     }
 
     const handleThumbsDownClick = () => {
         setBorderColor('qSecondary100')
-        console.log('should be orange')
+        setThumbs('thumbsDown')
     }
+
     const handleNeutralClick = () => {
         setBorderColor('white')
+        setThumbs('neutral')
     }
 
     return (
@@ -64,6 +92,7 @@ const ReviewGame: React.FC = () => {
                     </button>
                 </div>
             </form>
+            <Review gameId={gameId} />
         </div>
     )
 }

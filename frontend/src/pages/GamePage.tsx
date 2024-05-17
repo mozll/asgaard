@@ -142,7 +142,10 @@ const GamePage = () => {
                             >
                                 Forum
                             </button>
-                            {activeTab === 'Reviews' && <ReviewGame />}
+                            {activeTab === 'Reviews' && (
+                                <ReviewGame gameId={gameDetails.id} />
+                            )}
+
                             {activeTab === 'News' && (
                                 <h1>News page component here</h1>
                             )}
@@ -205,7 +208,6 @@ const GamePage = () => {
                                 <li className=" ">Developer: {developers}</li>
                                 <li className=" ">Publisher: {publishers}</li>
                                 <li className=" ">
-                                    {/* FORMAT DATE */}
                                     Release date: {gameDetails.released}
                                 </li>
 
