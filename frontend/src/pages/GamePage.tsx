@@ -143,7 +143,10 @@ const GamePage = () => {
                                 Forum
                             </button>
                             {activeTab === 'Reviews' && (
-                                <ReviewGame gameId={gameDetails.id} />
+                                <ReviewGame
+                                    gameId={gameDetails.id}
+                                    gameName={gameDetails.name}
+                                />
                             )}
 
                             {activeTab === 'News' && (

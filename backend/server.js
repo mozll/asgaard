@@ -37,8 +37,13 @@ app.use(
     secret: "longRandomHash",
     resave: false,
     saveUninitialized: false,
-    // Expires is for cookie age, and maxAge is for the user session inside of the cookie
-    cookie: { expires: 60 * 60 * 24, maxAge: 60 * 60 * 24 * 1000 },
+    cookie: {
+      domain: null,
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000,
+      secure: false,
+      httpOnly: true,
+    },
   })
 );
 
@@ -179,7 +184,11 @@ app.post("/api/games/:gameId/reviews", (req, res) => {
   }
 
   // 2. Get User ID:
-  const userId = req.session.user ? req.session.user.id : null;
+  const userId = req.session && req.session.user ? req.session.user.id : null;
+
+  if (!userId) {
+    return res.status(401).json({ error: "Unauthorized: User not logged in" });
+  }
 
   // 3. Database Insertion:
   const sql = `
@@ -202,22 +211,24 @@ app.post("/api/games/:gameId/reviews", (req, res) => {
   });
 });
 
+// Show the reviews on the game
 app.get("/api/games/:gameId/reviews", (req, res) => {
   const { gameId } = req.params;
 
   const sql = `
   SELECT
-  reviews.review_id,
-  reviews.review_rawg_id,
-  reviews.review_review,
-  reviews.review_thumbs,
-  reviews.review_created_at,
-  reviews.review_user_id AS user_id, 
-  users.user_name,
-  users.user_img
+    reviews.review_id,
+    reviews.review_rawg_id,
+    reviews.review_review,
+    reviews.review_thumbs,
+    reviews.review_created_at,
+    reviews.review_user_id AS user_id, 
+    users.user_name,
+    users.user_img
   FROM reviews
   JOIN users ON reviews.review_user_id = users.user_id
-  WHERE reviews.review_rawg_id = ?;
+  WHERE reviews.review_rawg_id = ?
+  ORDER BY reviews.review_created_at DESC;
 `;
 
   db.query(sql, [gameId], (err, rows) => {

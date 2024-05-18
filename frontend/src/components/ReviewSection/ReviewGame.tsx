@@ -1,15 +1,18 @@
-import React, { useState, FormEvent, ChangeEvent } from 'react'
+import React, { useState, FormEvent, ChangeEvent, useEffect } from 'react'
 import axios from 'axios'
 import Review from './Review'
 
 interface ReviewGameProps {
     gameId: number
+    gameName: string
 }
 
-const ReviewGame = ({ gameId }: ReviewGameProps) => {
+const ReviewGame = ({ gameId, gameName }: ReviewGameProps) => {
     const [review, setReview] = useState<string>('')
     const [thumbs, setThumbs] = useState<string>('neutral')
     const [borderColor, setBorderColor] = useState('green')
+    const [submitSuccess, setSubmitSuccess] = useState(false)
+    const [submitFail, setSubmitFail] = useState(false)
 
     const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
         setReview(event.target.value)
@@ -28,16 +31,21 @@ const ReviewGame = ({ gameId }: ReviewGameProps) => {
             )
 
             if (response.status === 201) {
-                // Cleanup textarea after successful submit
                 setReview('')
                 setThumbs('neutral')
                 setBorderColor('white')
+                setSubmitSuccess(true)
+                setTimeout(() => {
+                    window.location.reload() // Reload the page
+                }, 1500)
             } else {
                 console.error('Failed to submit review:', response.statusText)
+                setSubmitFail(true)
                 // Handle errors (display an error message, etc.)
             }
         } catch (error) {
             console.error('Error submitting review:', error)
+            setSubmitFail(true)
             // Handle network errors (display an error message, etc.)
         }
     }
@@ -83,6 +91,7 @@ const ReviewGame = ({ gameId }: ReviewGameProps) => {
                     />
                 </div>
                 <br />
+
                 <div className="flex justify-end">
                     <button
                         className="bg-qPrimary100 transition text-qDark100 py-2 px-4 rounded-full font-medium hover:bg-qPrimary300"
@@ -92,7 +101,18 @@ const ReviewGame = ({ gameId }: ReviewGameProps) => {
                     </button>
                 </div>
             </form>
-            <Review gameId={gameId} />
+            {submitSuccess && ( // Show success message conditionally
+                <div className="text-qPrimary100 my-2">
+                    Successfully submitted! Reloading to view review...
+                </div>
+            )}
+            {submitFail && ( // Show success message conditionally
+                <div className="text-qError100 my-2">
+                    Failed to submit review. Please try logging in...
+                </div>
+            )}
+
+            <Review gameId={gameId} gameName={gameName} />
         </div>
     )
 }
