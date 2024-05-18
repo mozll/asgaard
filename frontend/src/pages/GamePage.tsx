@@ -1,30 +1,27 @@
 import PlatformIcons from '../components/GameCard/PlatformIcons'
-import smallImg from '../assets/Dragon_Age_Origins_cover 2.png'
 import ReviewGame from '../components/ReviewSection/ReviewGame'
 import { GameDetails, getAllGameData } from '../../services/api-client'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 const GamePage = () => {
-    const [activeTab, setActiveTab] = useState('Reviews') // Set initial active tab
-    const [gameDetails, setGameDetails] = useState<GameDetails>() // Expand with a GameDetails for screenshots etc.
-
+    const [activeTab, setActiveTab] = useState('Reviews')
+    const [gameDetails, setGameDetails] = useState<GameDetails>()
     const { id } = useParams<{ id: string }>()
 
     useEffect(() => {
-        getGameDetails()
-    }, [])
-
-    // API CALL
-    const getGameDetails = async () => {
-        try {
-            if (!id) return
-            const gameDetails = await getAllGameData(id)
-            setGameDetails(gameDetails)
-        } catch (error) {
-            console.error('Error fetching game data: ', error)
+        const getGameDetails = async () => {
+            try {
+                if (!id) return
+                const gameDetails = await getAllGameData(id)
+                setGameDetails(gameDetails)
+            } catch (error) {
+                console.error('Error fetching game data: ', error)
+            }
         }
-    }
+
+        getGameDetails()
+    }, [id])
 
     const platformNames = gameDetails?.platforms.map(
         (platform) => platform.platform.name
@@ -33,6 +30,7 @@ const GamePage = () => {
     const developers = gameDetails?.developers.map(
         (developer) => developer.name
     )
+
     const publishers = gameDetails?.publishers.map(
         (publisher) => publisher.name
     )
@@ -123,21 +121,33 @@ const GamePage = () => {
                     <div className="sm:flex">
                         <div className="sm:w-7/12 mt-8">
                             <button
-                                className={`mr-8 hover:underline hover:underline-offset-8 ${activeTab === 'Reviews' ? 'font-bold underline underline-offset-8 mb-4' : ''}`}
+                                className={`mr-8 hover:underline hover:underline-offset-8 ${
+                                    activeTab === 'Reviews'
+                                        ? 'font-bold underline underline-offset-8 mb-4'
+                                        : ''
+                                }`}
                                 onClick={() => setActiveTab('Reviews')}
                             >
                                 Reviews
                             </button>
 
                             <button
-                                className={`mr-8 hover:underline hover:underline-offset-8 ${activeTab === 'News' ? 'font-bold underline underline-offset-8 mb-4' : ''}`}
+                                className={`mr-8 hover:underline hover:underline-offset-8 ${
+                                    activeTab === 'News'
+                                        ? 'font-bold underline underline-offset-8 mb-4'
+                                        : ''
+                                }`}
                                 onClick={() => setActiveTab('News')}
                             >
                                 News
                             </button>
 
                             <button
-                                className={` hover:underline hover:underline-offset-8 ${activeTab === 'Forum' ? 'font-bold underline-offset-8 mb-4' : ''}`}
+                                className={` hover:underline hover:underline-offset-8 ${
+                                    activeTab === 'Forum'
+                                        ? 'font-bold underline-offset-8 mb-4'
+                                        : ''
+                                }`}
                                 onClick={() => setActiveTab('Forum')}
                             >
                                 Forum

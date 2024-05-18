@@ -1,8 +1,6 @@
 import { createContext, useEffect, useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import axios from 'axios'
-
-import GamesList from './components/GamesList'
 import GenresList from './components/GenresList'
 import Navbar from '../src/components/Nav/Navbar'
 import HomePage from './pages/HomePage'
@@ -13,7 +11,6 @@ import LoginPage from './pages/LoginPage'
 import './styles.css' // Import your global styles
 import ProfilePage from './pages/ProfilePage'
 import GameGenreList from './components/GameGenreList.tsx/GameGenreList'
-import Searchbar from './components/Nav/Searchbar'
 
 export interface User {
     id: number
