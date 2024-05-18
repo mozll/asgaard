@@ -37,8 +37,13 @@ app.use(
     secret: "longRandomHash",
     resave: false,
     saveUninitialized: false,
-    // Expires is for cookie age, and maxAge is for the user session inside of the cookie
-    cookie: { expires: 60 * 60 * 24, maxAge: 60 * 60 * 24 * 1000 },
+    cookie: {
+      domain: null,
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000,
+      secure: false,
+      httpOnly: true,
+    },
   })
 );
 
@@ -167,4 +172,71 @@ app.get("/user", (req, res) => {
   } else {
     res.send({ loggedIn: false });
   }
+});
+
+app.post("/api/games/:gameId/reviews", (req, res) => {
+  const { gameId } = req.params;
+  const { review, thumbs } = req.body; // Include 'thumbs'
+
+  // 1. Validation:
+  if (!review || !thumbs || isNaN(gameId)) {
+    return res.status(400).json({ error: "Invalid data provided" });
+  }
+
+  // 2. Get User ID:
+  const userId = req.session && req.session.user ? req.session.user.id : null;
+
+  if (!userId) {
+    return res.status(401).json({ error: "Unauthorized: User not logged in" });
+  }
+
+  // 3. Database Insertion:
+  const sql = `
+    INSERT INTO reviews (
+      review_rawg_id, 
+      review_review, 
+      review_thumbs,
+      review_user_id
+    ) VALUES (?, ?, ?, ?)`;
+
+  const values = [gameId, review, thumbs, userId];
+
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("Error submitting review:", err);
+      res.status(500).json({ error: "Failed to submit review" });
+    } else {
+      res.status(201).json({ message: "Review submitted successfully" });
+    }
+  });
+});
+
+// Show the reviews on the game
+app.get("/api/games/:gameId/reviews", (req, res) => {
+  const { gameId } = req.params;
+
+  const sql = `
+  SELECT
+    reviews.review_id,
+    reviews.review_rawg_id,
+    reviews.review_review,
+    reviews.review_thumbs,
+    reviews.review_created_at,
+    reviews.review_user_id AS user_id, 
+    users.user_name,
+    users.user_img
+  FROM reviews
+  JOIN users ON reviews.review_user_id = users.user_id
+  WHERE reviews.review_rawg_id = ?
+  ORDER BY reviews.review_created_at DESC;
+`;
+
+  db.query(sql, [gameId], (err, rows) => {
+    if (err) {
+      console.error("Error fetching reviews:", err);
+      res.status(500).json({ error: "Failed to fetch reviews" });
+    } else {
+      res.json(rows);
+    }
+  });
 });

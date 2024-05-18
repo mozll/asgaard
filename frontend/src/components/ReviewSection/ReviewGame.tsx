@@ -1,32 +1,68 @@
-import React, { useState, FormEvent, ChangeEvent } from 'react'
+import React, { useState, FormEvent, ChangeEvent, useEffect } from 'react'
+import axios from 'axios'
+import Review from './Review'
 
-const ReviewGame: React.FC = () => {
+interface ReviewGameProps {
+    gameId: number
+    gameName: string
+}
+
+const ReviewGame = ({ gameId, gameName }: ReviewGameProps) => {
     const [review, setReview] = useState<string>('')
+    const [thumbs, setThumbs] = useState<string>('neutral')
     const [borderColor, setBorderColor] = useState('green')
+    const [submitSuccess, setSubmitSuccess] = useState(false)
+    const [submitFail, setSubmitFail] = useState(false)
 
     const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
         setReview(event.target.value)
     }
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        // Here you can add code to submit the review, such as sending it to a backend server
-        console.log('Review submitted:', review)
-        // You can also clear the review text area after submission
-        setReview('')
+
+        try {
+            const response = await axios.post(
+                `http://localhost:8081/api/games/${gameId}/reviews`,
+                {
+                    review,
+                    thumbs,
+                }
+            )
+
+            if (response.status === 201) {
+                setReview('')
+                setThumbs('neutral')
+                setBorderColor('white')
+                setSubmitSuccess(true)
+                setTimeout(() => {
+                    window.location.reload() // Reload the page
+                }, 1500)
+            } else {
+                console.error('Failed to submit review:', response.statusText)
+                setSubmitFail(true)
+                // Handle errors (display an error message, etc.)
+            }
+        } catch (error) {
+            console.error('Error submitting review:', error)
+            setSubmitFail(true)
+            // Handle network errors (display an error message, etc.)
+        }
     }
 
     const handleThumbsUpClick = () => {
         setBorderColor('qPrimary100')
-        console.log('should be green')
+        setThumbs('thumbsUp')
     }
 
     const handleThumbsDownClick = () => {
         setBorderColor('qSecondary100')
-        console.log('should be orange')
+        setThumbs('thumbsDown')
     }
+
     const handleNeutralClick = () => {
         setBorderColor('white')
+        setThumbs('neutral')
     }
 
     return (
@@ -55,6 +91,7 @@ const ReviewGame: React.FC = () => {
                     />
                 </div>
                 <br />
+
                 <div className="flex justify-end">
                     <button
                         className="bg-qPrimary100 transition text-qDark100 py-2 px-4 rounded-full font-medium hover:bg-qPrimary300"
@@ -64,6 +101,18 @@ const ReviewGame: React.FC = () => {
                     </button>
                 </div>
             </form>
+            {submitSuccess && ( // Show success message conditionally
+                <div className="text-qPrimary100 my-2">
+                    Successfully submitted! Reloading to view review...
+                </div>
+            )}
+            {submitFail && ( // Show success message conditionally
+                <div className="text-qError100 my-2">
+                    Failed to submit review. Please try logging in...
+                </div>
+            )}
+
+            <Review gameId={gameId} gameName={gameName} />
         </div>
     )
 }
