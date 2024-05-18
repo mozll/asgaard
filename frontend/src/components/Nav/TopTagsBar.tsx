@@ -23,7 +23,12 @@ const TopTagsBar = () => {
                 const fetchedGenres = await getGenres() // Call  getGenres function from api-client
                 setGenres(fetchedGenres) // Update genres state with fetched data
             } catch (error) {
-                console.error('Error fetching genres:', error)
+                console.error(
+                    'Error fetching genres:',
+                    error,
+                    'loading status',
+                    isLoading
+                )
                 setGenres(['Action', 'Adventure', 'RPG']) // Fallback genres
             } finally {
                 setIsLoading(false)

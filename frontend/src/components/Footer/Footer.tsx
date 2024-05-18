@@ -1,5 +1,6 @@
 import '../../styles.css'
 import FooterMenu from './FooterMenu'
+import React from 'react'
 
 function Footer() {
     const navItems = [

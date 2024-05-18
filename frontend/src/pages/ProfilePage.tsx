@@ -1,4 +1,5 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import React from 'react'
+import { NavLink } from 'react-router-dom'
 import { User } from '../App'
 import axios from 'axios'
 import { useState } from 'react'
@@ -20,7 +21,6 @@ const ProfilePage = ({ user }: ProfileProps) => {
         )
     }
 
-    const navigate = useNavigate()
     const [activeTab, setActiveTab] = useState('Favorite Games') // Set initial active tab
     const handleLogout = async () => {
         try {

@@ -1,7 +1,6 @@
+import React from 'react'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import thumbsUp from '../../assets/thumbsUp.svg'
-import thumbsDown from '../../assets/thumbsDown.svg'
 
 interface ReviewProps {
     gameId: number

@@ -1,4 +1,4 @@
-import React, { useState, FormEvent, ChangeEvent, useEffect } from 'react'
+import React, { useState, FormEvent, ChangeEvent } from 'react'
 import axios from 'axios'
 import Review from './Review'
 

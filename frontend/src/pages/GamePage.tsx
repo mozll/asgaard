@@ -1,3 +1,4 @@
+import React from 'react'
 import PlatformIcons from '../components/GameCard/PlatformIcons'
 import ReviewGame from '../components/ReviewSection/ReviewGame'
 import { GameDetails, getAllGameData } from '../../services/api-client'
