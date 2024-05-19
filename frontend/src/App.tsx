@@ -20,9 +20,17 @@ export interface User {
     img: string
 }
 
-export const AuthContext = createContext({
+interface AuthContextType {
+    loggedIn: boolean
+    setLoggedIn: (loggedIn: boolean) => void
+    user: User | null // User can be null if not logged in
+}
+
+export const AuthContext = createContext<AuthContextType>({
     loggedIn: false,
     setLoggedIn: (loggedIn: boolean) => {},
+    user: null,
+    // Got error with ESLint when these were on
 })
 
 function App() {
@@ -56,7 +64,8 @@ function App() {
     }, [loggedIn])
 
     return (
-        <AuthContext.Provider value={{ loggedIn, setLoggedIn }}>
+        // AuthContext here provides global variables, so that I can access 'user' easily without passing it thru a bunch of components
+        <AuthContext.Provider value={{ loggedIn, setLoggedIn, user }}>
             <Navbar navItems={navItems} user={user} />
 
             <Routes>

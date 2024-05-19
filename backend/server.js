@@ -106,7 +106,6 @@ app.post("/login", (req, res) => {
   const user_name = req.body.user_name;
   const user_password = req.body.user_password;
 
-  // Input Validation (Basic)
   if (!user_name || !user_password) {
     return res
       .status(400)
@@ -237,6 +236,44 @@ app.get("/api/games/:gameId/reviews", (req, res) => {
       res.status(500).json({ error: "Failed to fetch reviews" });
     } else {
       res.json(rows);
+    }
+  });
+});
+
+app.delete("/api/games/:gameId/reviews/:reviewId", (req, res) => {
+  const { gameId, reviewId } = req.params;
+
+  // 1. Validation
+  if (isNaN(gameId) || isNaN(reviewId)) {
+    return res.status(400).json({ error: "Invalid game or review ID" });
+  }
+
+  // 2. Authentication & Authorization
+  const userId = req.session && req.session.user ? req.session.user.id : null;
+  if (!userId) {
+    return res.status(401).json({ error: "Unauthorized: User not logged in" });
+  }
+
+  // 3. Database Deletion (with ownership check)
+  const sql = `
+    DELETE FROM reviews 
+    WHERE review_id = ? 
+    AND review_rawg_id = ? 
+    AND review_user_id = ?`;
+
+  db.query(sql, [reviewId, gameId, userId], (err, result) => {
+    if (err) {
+      console.error("Error deleting review:", err);
+      return res.status(500).json({ error: "Failed to delete review" });
+    }
+
+    // Check if any rows were affected
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        error: "Review not found or you are not authorized to delete it",
+      });
+    } else {
+      res.sendStatus(200); // Successful deletion
     }
   });
 });

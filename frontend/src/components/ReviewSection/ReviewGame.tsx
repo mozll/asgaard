@@ -35,9 +35,6 @@ const ReviewGame = ({ gameId, gameName }: ReviewGameProps) => {
                 setThumbs('neutral')
                 setBorderColor('white')
                 setSubmitSuccess(true)
-                setTimeout(() => {
-                    window.location.reload() // Reload the page
-                }, 1500)
             } else {
                 console.error('Failed to submit review:', response.statusText)
                 setSubmitFail(true)
@@ -103,7 +100,7 @@ const ReviewGame = ({ gameId, gameName }: ReviewGameProps) => {
             </form>
             {submitSuccess && ( // Show success message conditionally
                 <div className="text-qPrimary100 my-2">
-                    Successfully submitted! Reloading to view review...
+                    Successfully submitted!
                 </div>
             )}
             {submitFail && ( // Show success message conditionally

@@ -14,8 +14,9 @@ const GamePage = () => {
         const getGameDetails = async () => {
             try {
                 if (!id) return
-                const gameDetails = await getAllGameData(id)
-                setGameDetails(gameDetails)
+
+                const fetchGameDetails = await getAllGameData(id)
+                setGameDetails(fetchGameDetails)
             } catch (error) {
                 console.error('Error fetching game data: ', error)
             }
