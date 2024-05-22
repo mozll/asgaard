@@ -1,6 +1,6 @@
 import React, { useState, FormEvent, ChangeEvent } from 'react'
 import axios from 'axios'
-import Review from './Review'
+import ReviewList from './ReviewList'
 
 interface ReviewGameProps {
     gameId: number
@@ -128,7 +128,7 @@ const ReviewGame = ({ gameId, gameName }: ReviewGameProps) => {
                 </div>
             )}
 
-            <Review gameId={gameId} gameName={gameName} />
+            <ReviewList gameId={gameId} gameName={gameName} />
         </div>
     )
 }

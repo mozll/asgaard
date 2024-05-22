@@ -19,7 +19,7 @@ interface ReviewData {
     user_img: Blob
 }
 
-const Review = ({ gameId, gameName }: ReviewProps) => {
+const ReviewList = ({ gameId, gameName }: ReviewProps) => {
     const { user } = useContext(AuthContext)
     const [reviews, setReviews] = useState<ReviewData[]>([]) // Use an array for multiple reviews
 
@@ -147,4 +147,4 @@ const Review = ({ gameId, gameName }: ReviewProps) => {
     )
 }
 
-export default Review
+export default ReviewList

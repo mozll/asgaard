@@ -344,12 +344,17 @@ ORDER BY forum_posts.forum_post_created_at DESC;
       console.error("Error fetching forum posts:", err);
       res.status(500).json({ error: "Failed to fetch forum posts" });
     } else {
-      res.json(rows);
+      const cleanedPosts = rows.map((post) => ({
+        ...post,
+        forum_post_title: post.forum_post_title.replace(/^'|'$/g, ""),
+        forum_post_post: post.forum_post_post.replace(/^'|'$/g, ""),
+      }));
+      res.json(cleanedPosts);
     }
   });
 });
 
-// Deletes your forum post
+// Deletes the forum post
 app.delete("/api/games/:gameId/forum_posts/:forumPostId", (req, res) => {
   const { gameId, forumPostId } = req.params;
 
@@ -374,7 +379,7 @@ app.delete("/api/games/:gameId/forum_posts/:forumPostId", (req, res) => {
       return res.status(500).json({ error: "Failed to delete forum post" });
     }
 
-    // Check if any rows were affected
+    // Checks if any rows were affected
     if (result.affectedRows === 0) {
       return res.status(404).json({
         error: "Forum post not found or you are not authorized to delete it",
@@ -391,21 +396,18 @@ app.post("/api/forum_posts/:postId/comments", (req, res) => {
   const { postId } = req.params;
   let { comment_content } = req.body;
 
-  // 1. Input Validation and Sanitization:
+  // Input Validation
   if (!comment_content || isNaN(postId)) {
     return res.status(400).json({ error: "Invalid data provided" });
   }
-
-  // Sanitize the comment content (to prevent XSS attacks)
+  // Sanitizing
   comment_content = db.escape(comment_content);
 
-  // 2. Authentication/Authorization (assuming you have middleware for this):
-  const userId = req.user.id;
+  const userId = req.session && req.session.user ? req.session.user.id : null;
   if (!userId) {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-  // 3. Database Insertion:
   const sql = `
       INSERT INTO comments (forum_post_id, comment_comment, comment_user_id, comment_created_at)
       VALUES (?, ?, ?, NOW())  
@@ -414,21 +416,38 @@ app.post("/api/forum_posts/:postId/comments", (req, res) => {
   db.query(sql, [postId, comment_content, userId], (err, result) => {
     if (err) {
       console.error("Error submitting comment:", err);
-      return res.status(500).json({ error: "Database error" }); // More generic error message for security
+      return res.status(500).json({ error: "Database error" });
+    } else {
+      res.status(201).json({ message: "Comment submitted successfully" });
     }
+  });
+});
 
-    // 4. Optional: Fetch and return the newly created comment
-    const newCommentId = result.insertId;
-    db.query(
-      "SELECT * FROM comments WHERE comment_id = ?",
-      [newCommentId],
-      (err, rows) => {
-        if (err) {
-          console.error("Error fetching new comment:", err);
-          return res.status(500).json({ error: "Database error" });
-        }
-        res.status(200).json(rows[0]);
-      }
-    );
+// Gets comments for a forum post
+app.get("/api/forum_posts/:postId/comments", (req, res) => {
+  const postId = req.params.postId; // Using postId for consistency
+
+  // Input Validation
+  if (isNaN(postId)) {
+    return res.status(400).json({ error: "Invalid forum post ID" });
+  }
+
+  const sql = ` SELECT comments.*, users.user_id, users.user_name, forum_posts.forum_post_id
+  FROM comments 
+  JOIN users ON comments.comment_user_id = users.user_id 
+  JOIN forum_posts ON comments.forum_post_id = forum_posts.forum_post_id 
+  WHERE comments.forum_post_id = ?
+  ORDER BY comment_created_at DESC`;
+
+  db.query(sql, [postId], (err, rows) => {
+    if (err) {
+      console.error("Error fetching comments:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    const cleanedComments = rows.map((comment) => ({
+      ...comment,
+      comment_comment: comment.comment_comment.replace(/^'|'$/g, ""),
+    }));
+    res.json(cleanedComments);
   });
 });

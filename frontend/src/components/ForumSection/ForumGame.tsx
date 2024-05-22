@@ -1,6 +1,6 @@
 import React, { useState, FormEvent, ChangeEvent } from 'react'
 import axios from 'axios'
-import ForumPosts from './ForumPost' // Assuming you have this component
+import ForumList from './ForumList'
 
 interface ForumGameProps {
     gameId: number
@@ -9,7 +9,7 @@ interface ForumGameProps {
 
 const ForumGame = ({ gameId, gameName }: ForumGameProps) => {
     const [forumPost, setForumPost] = useState<string>('')
-    const [forumTitle, setForumTitle] = useState<string>('') // New state for title
+    const [forumTitle, setForumTitle] = useState<string>('')
     const [submitSuccess, setSubmitSuccess] = useState(false)
     const [submitFail, setSubmitFail] = useState(false)
 
@@ -91,7 +91,7 @@ const ForumGame = ({ gameId, gameName }: ForumGameProps) => {
                 </div>
             )}
 
-            <ForumPosts gameId={gameId} gameName={gameName} />
+            <ForumList gameId={gameId} gameName={gameName} />
         </div>
     )
 }
