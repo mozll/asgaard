@@ -12,22 +12,22 @@ const CommentList = ({ postId }: CommentListProps) => {
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
-        const fetchComments = async () => {
-            try {
-                const response = await axios.get<CommentProps['comment'][]>(
-                    `http://localhost:8081/api/forum_posts/${postId}/comments`
-                )
-                setComments(response.data)
-                setIsLoading(false)
-            } catch (err) {
-                console.error('Error fetching comments:', err)
-                setError('Failed to load comments. Please try again.')
-                setIsLoading(false)
-            }
-        }
+        getComments()
+    }, [])
 
-        fetchComments()
-    }, [postId]) // Fetch comments whenever postId changes
+    const getComments = async () => {
+        try {
+            const response = await axios.get<CommentProps['comment'][]>(
+                `http://localhost:8081/api/forum_posts/${postId}/comments`
+            )
+            setComments(response.data)
+            setIsLoading(false)
+        } catch (err) {
+            console.error('Error fetching comments:', err)
+            setError('Failed to load comments. Please try again.')
+            setIsLoading(false)
+        }
+    }
 
     if (isLoading) {
         return <div>Loading comments...</div>

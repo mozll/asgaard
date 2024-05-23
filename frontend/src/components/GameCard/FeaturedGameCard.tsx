@@ -62,7 +62,7 @@ const FeaturedGameCard = ({
                         <div className="Metacritic-score flex flex-col">
                             <p
                                 className={`${
-                                    parseInt(metacritic) >= 97
+                                    parseInt(metacritic) >= 90
                                         ? 'bg-qPrimary400'
                                         : 'bg-qSecondary400'
                                 } px-2 py-1 my-2 rounded-md text-qDark200 font-medium text-xl`}

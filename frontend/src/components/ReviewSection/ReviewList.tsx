@@ -25,7 +25,8 @@ const ReviewList = ({ gameId, gameName }: ReviewProps) => {
 
     useEffect(() => {
         getReview()
-    }, [gameId])
+        console.log('teeeest')
+    }, [reviews.length])
     // Right now it only runs once, so the new review is only added when we reload the page. If we include [reviews] above, then it infinite loops, which we dont want. TO DO
 
     const getReview = async () => {
