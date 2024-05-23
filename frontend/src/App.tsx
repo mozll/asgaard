@@ -12,6 +12,7 @@ import LoginPage from './pages/LoginPage'
 import './styles.css' // Import your global styles
 import ProfilePage from './pages/ProfilePage'
 import GameGenreList from './components/GameGenreList.tsx/GameGenreList'
+import Quiz from './components/QuizSection/Quiz'
 
 export interface User {
     id: number
@@ -41,6 +42,7 @@ function App() {
         { link: '/', title: 'Games' },
         { link: '/news', title: 'News' },
         { link: '/faq', title: 'FAQ' },
+        { link: '/gamerecommender', title: 'Game Recommender' },
     ]
 
     useEffect(() => {
@@ -99,6 +101,7 @@ function App() {
                         </div>
                     }
                 />
+                <Route path="/gamerecommender" element={<Quiz />} />
                 <Route path="/genres" element={<GenresList />} />
                 <Route path="/signup" element={<SignUpPage />} />
                 <Route path="/login" element={<LoginPage />} />

@@ -341,3 +341,48 @@ export const getAllGameData = async (gameId: string) => {
         throw error
     }
 }
+
+export const getQuizGamesList = async (
+    userAnswers: number[]
+): Promise<any[]> => {
+    // 1. Define answer mappings (adjust these to your quiz questions and RAWG data)
+    const genreMappings: { [answerIndex: string]: string } = {
+        '0': 'action', // Example: Answer 0 maps to 'action' genre
+        '1': 'adventure',
+        // ... Add more mappings as needed
+    }
+
+    const platformMappings: { [answerIndex: string]: number } = {
+        '0': 18, // PlayStation 4
+        '1': 1, // Xbox One
+        // ... Add more mappings
+    }
+
+    // 2. Extract selected genres and platforms based on user answers
+    const selectedGenres = userAnswers
+        .map((answer) => genreMappings[answer.toString()])
+        .filter(Boolean)
+        .join(',')
+
+    const selectedPlatformIds = userAnswers
+        .map((answer) => platformMappings[answer.toString()])
+        .filter(Boolean)
+        .join(',')
+
+    try {
+        // 3. Make the API call with query parameters
+        const response = await axiosInstance.get('/games', {
+            params: {
+                key: RAWG_API_KEY, // Or directly RAWG_API_KEY if available
+                genres: selectedGenres || undefined, // Include only if not empty
+                platforms: selectedPlatformIds || undefined, // Include only if not empty
+                // ... Add other relevant parameters (e.g., page, page_size, etc.)
+            },
+        })
+
+        return response.data.results
+    } catch (error) {
+        // 4. Handle errors gracefully (e.g., display an error message to the user)
+        throw new Error('Error fetching games: ' + error)
+    }
+}
