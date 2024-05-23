@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { getQuizGamesList } from '../../../services/api-client'
 import GameCard from '../GameCard/GameCard'
+import { Game } from '../../../services/api-client'
 
 interface ResultProps {
     answers: number[]
 }
 
-const Result: React.FC<ResultProps> = ({ answers }) => {
-    const [recommendedGames, setRecommendedGames] = useState<any[]>([])
+const Result = ({ answers }: ResultProps) => {
+    const [recommendedGames, setRecommendedGames] = useState<Game[]>([])
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
-        const fetchGames = async () => {
+        const getGames = async () => {
             try {
                 const games = await getQuizGamesList(answers)
                 setRecommendedGames(games)
@@ -22,7 +23,7 @@ const Result: React.FC<ResultProps> = ({ answers }) => {
             }
         }
 
-        fetchGames()
+        getGames()
     }, [answers])
 
     return (
@@ -32,8 +33,19 @@ const Result: React.FC<ResultProps> = ({ answers }) => {
                 <p>Loading...</p>
             ) : (
                 <div>
-                    {recommendedGames.map((game, index) => (
-                        <GameCard key={index} {...game} />
+                    {recommendedGames.map((game) => (
+                        <GameCard
+                            key={game.id}
+                            id={game.id}
+                            background_image={game.background_image}
+                            name={game.name}
+                            reviews_count={game.reviews_count}
+                            metacritic={game.metacritic}
+                            genres={game.genres}
+                            ratings_count={game.ratings_count}
+                            tags={game.tags}
+                            platforms={game.platforms}
+                        />
                     ))}
                 </div>
             )}

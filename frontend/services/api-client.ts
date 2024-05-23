@@ -342,47 +342,90 @@ export const getAllGameData = async (gameId: string) => {
     }
 }
 
-export const getQuizGamesList = async (
-    userAnswers: number[]
-): Promise<any[]> => {
-    // 1. Define answer mappings (adjust these to your quiz questions and RAWG data)
-    const genreMappings: { [answerIndex: string]: string } = {
-        '0': 'action', // Example: Answer 0 maps to 'action' genre
-        '1': 'adventure',
-        // ... Add more mappings as needed
-    }
+// Define genre and platform mappings
+const genreMappings: {
+    [questionIndex: number]: { [answerIndex: number]: string }
+} = {
+    0: {
+        0: 'action', // Hero’s journey with epic battles
+        1: 'adventure', // Exploring mysterious and unknown worlds
+        2: 'role-playing-games-rpg', // Deep and immersive character development
+        3: 'strategy', // Strategic thinking and planning
+        4: 'shooter', // Fast-paced and intense action
+        5: 'puzzle', // Solving complex puzzles and challenges
+        6: 'simulation', // Building and managing systems
+        7: 'sports', // Engaging in competitive sports scenarios
+    },
+    1: {
+        0: 'action', // Immersive graphics and realism
+        1: 'adventure', // Strong narrative and story
+        2: 'role-playing-games-rpg', // Character customization and progression
+        3: 'strategy', // Strategic decision-making
+        4: 'shooter', // Quick reflexes and precision
+        5: 'puzzle', // Mental challenges and logic puzzles
+        6: 'simulation', // Creative freedom and sandbox elements
+        7: 'sports', // Team-based and competitive play
+    },
+    2: {
+        0: 'shooter', // Modern and futuristic settings
+        1: 'role-playing-games-rpg', // Fantasy and mythical worlds
+        2: 'strategy', // Historical and realistic settings
+        3: 'adventure', // Sci-fi and outer space adventures
+        4: 'simulation', // Urban and city landscapes
+        5: 'adventure', // Nature and wilderness exploration
+        6: 'puzzle', // Cartoonish and whimsical worlds
+        7: 'strategy', // Underground and dystopian themes
+    },
+}
 
-    const platformMappings: { [answerIndex: string]: number } = {
-        '0': 18, // PlayStation 4
-        '1': 1, // Xbox One
-        // ... Add more mappings
-    }
+const platformMappings: {
+    [questionIndex: number]: { [answerIndex: number]: number }
+} = {
+    3: {
+        0: 4, // High-end gaming PC
+        1: 18, // Home console (e.g., PlayStation, Xbox)
+        2: 7, // Portable console (e.g., Nintendo Switch)
+        3: 3, // Mobile device (e.g., smartphone, tablet)
+        4: 13, // Older consoles (e.g., PlayStation 3, Xbox 360)
+        5: 8, // Handheld consoles (e.g., Nintendo 3DS, PS Vita)
+        6: 24, // Retro gaming systems (e.g., Atari, Commodore)
+    },
+}
 
-    // 2. Extract selected genres and platforms based on user answers
-    const selectedGenres = userAnswers
-        .map((answer) => genreMappings[answer.toString()])
-        .filter(Boolean)
-        .join(',')
+export const getQuizGamesList = async (userAnswers: number[]) => {
+    const selectedGenres: string[] = []
+    const selectedPlatforms: number[] = []
 
-    const selectedPlatformIds = userAnswers
-        .map((answer) => platformMappings[answer.toString()])
-        .filter(Boolean)
-        .join(',')
+    userAnswers.forEach((answer, questionIndex) => {
+        const genre = genreMappings[questionIndex]?.[answer]
+        if (genre) selectedGenres.push(genre)
+
+        const platform = platformMappings[questionIndex]?.[answer]
+        if (platform) selectedPlatforms.push(platform)
+    })
+
+    const genresParam = selectedGenres.join(',')
+    const platformsParam = selectedPlatforms.join(',')
+
+    console.log('Selected Genres:', genresParam)
+    console.log('Selected Platforms:', platformsParam)
 
     try {
-        // 3. Make the API call with query parameters
         const response = await axiosInstance.get('/games', {
             params: {
-                key: RAWG_API_KEY, // Or directly RAWG_API_KEY if available
-                genres: selectedGenres || undefined, // Include only if not empty
-                platforms: selectedPlatformIds || undefined, // Include only if not empty
-                // ... Add other relevant parameters (e.g., page, page_size, etc.)
+                key: RAWG_API_KEY,
+                genres: genresParam || undefined,
+                platforms: platformsParam || undefined,
+                // I can decide the ordering, but the default is relevance, which is decided by RAWG.ios complex algorithm. Which is a mix of Match by Query Parameters, Popularity, Release Date
+                // ordering: '-released', This is for ordering by release date
             },
         })
 
+        console.log('API Response:', response.data.results)
+
         return response.data.results
     } catch (error) {
-        // 4. Handle errors gracefully (e.g., display an error message to the user)
+        console.error('Error fetching games:', error)
         throw new Error('Error fetching games: ' + error)
     }
 }

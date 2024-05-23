@@ -12,7 +12,7 @@ import LoginPage from './pages/LoginPage'
 import './styles.css' // Import your global styles
 import ProfilePage from './pages/ProfilePage'
 import GameGenreList from './components/GameGenreList.tsx/GameGenreList'
-import Quiz from './components/QuizSection/Quiz'
+import Quiz from './components/GameRecommenderSection/Quiz'
 
 export interface User {
     id: number
