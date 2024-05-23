@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
+import { AuthContext } from '../../App'
 
 interface ReviewProps {
     gameId: number
@@ -18,13 +19,15 @@ interface ReviewData {
     user_img: Blob
 }
 
-const Review = ({ gameId, gameName }: ReviewProps) => {
+const ReviewList = ({ gameId, gameName }: ReviewProps) => {
+    const { user } = useContext(AuthContext)
     const [reviews, setReviews] = useState<ReviewData[]>([]) // Use an array for multiple reviews
-    // Convert user_img.data (Uint8Array) to base64 string
 
     useEffect(() => {
         getReview()
-    }, [])
+        console.log('teeeest')
+    }, [reviews.length])
+    // Right now it only runs once, so the new review is only added when we reload the page. If we include [reviews] above, then it infinite loops, which we dont want. TO DO
 
     const getReview = async () => {
         try {
@@ -37,9 +40,35 @@ const Review = ({ gameId, gameName }: ReviewProps) => {
             console.error('Error fetching review:', error)
         }
     }
+
+    const handleDeleteClick = async (reviewId: number) => {
+        try {
+            const response = await axios.delete(
+                `http://localhost:8081/api/games/${gameId}/reviews/${reviewId}`
+            )
+            if (response.status === 200) {
+                setReviews((prevReviews) =>
+                    prevReviews.filter(
+                        (review) => review.review_id !== reviewId
+                    )
+                )
+            } else {
+                const errorData = response.data
+                console.error('Error deleting review:', errorData)
+            }
+        } catch (error) {
+            console.error('Network or unexpected error:', error)
+        }
+    }
+
     return (
         <div>
             <h1 className="font-bold text-xl">Reviews for {gameName}</h1>
+            <p>
+                {reviews.length} Questzing User Review
+                {reviews.length !== 1 && 's'}
+            </p>
+
             {reviews.length > 0 ? (
                 <ul>
                     {reviews.map((review) => (
@@ -64,8 +93,6 @@ const Review = ({ gameId, gameName }: ReviewProps) => {
                                         )}
                                         {review.user_name}
                                     </h2>
-
-                                    {/* Conditional SVG Rendering */}
                                     {review.review_thumbs === 'thumbsUp' ? (
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -86,18 +113,29 @@ const Review = ({ gameId, gameName }: ReviewProps) => {
                                     ) : (
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="w-6 h-6 fill-current ml-2" // Default fill color
-                                            viewBox="0 0 2323" // Replace with the correct values from your neutral.svg file
+                                            className="w-6 h-6 fill-current ml-2"
+                                            viewBox="0 0 2323"
                                         >
                                             <path d="M10 20a10 10 0 1 1 0-20 10 10 0 0 1 0 20zM6.5 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm7 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM7 13a1 1 0 0 0 0 2h6a1 1 0 0 0 0-2H7z" />
                                         </svg>
                                     )}
                                 </div>
-
                                 <div className="flex items-center mt-2">
                                     <p className="flex-grow font-light">
                                         {review.review_review}
                                     </p>
+                                    {user && review.user_id === user.id && (
+                                        <button
+                                            onClick={() =>
+                                                handleDeleteClick(
+                                                    review.review_id
+                                                )
+                                            }
+                                            className="text-qError100 flex justify-end hover:underline hover:underline-offset-8"
+                                        >
+                                            Delete
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -110,4 +148,4 @@ const Review = ({ gameId, gameName }: ReviewProps) => {
     )
 }
 
-export default Review
+export default ReviewList

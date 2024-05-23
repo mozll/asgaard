@@ -45,7 +45,7 @@ const ProfilePage = ({ user }: ProfileProps) => {
             </h2>
             <div className="profile-picture flex justify-center mt-8">
                 <img
-                    src={`data:image/png;base64,${user.img}`} // Correct data URL
+                    src={`data:image/png;base64,${user.img}`}
                     alt="Profile Image"
                     className="outline outline-white rounded-full bg-qPrimary100 h-48"
                 />

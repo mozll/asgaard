@@ -4,6 +4,7 @@ import ReviewGame from '../components/ReviewSection/ReviewGame'
 import { GameDetails, getAllGameData } from '../../services/api-client'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import ForumGame from '../components/ForumSection/ForumGame'
 
 const GamePage = () => {
     const [activeTab, setActiveTab] = useState('Reviews')
@@ -14,8 +15,9 @@ const GamePage = () => {
         const getGameDetails = async () => {
             try {
                 if (!id) return
-                const gameDetails = await getAllGameData(id)
-                setGameDetails(gameDetails)
+
+                const fetchGameDetails = await getAllGameData(id)
+                setGameDetails(fetchGameDetails)
             } catch (error) {
                 console.error('Error fetching game data: ', error)
             }
@@ -146,7 +148,7 @@ const GamePage = () => {
                             <button
                                 className={` hover:underline hover:underline-offset-8 ${
                                     activeTab === 'Forum'
-                                        ? 'font-bold underline-offset-8 mb-4'
+                                        ? 'font-bold underline underline-offset-8 mb-4'
                                         : ''
                                 }`}
                                 onClick={() => setActiveTab('Forum')}
@@ -164,7 +166,10 @@ const GamePage = () => {
                                 <h1>News page component here</h1>
                             )}
                             {activeTab === 'Forum' && (
-                                <h1>Forum page component here</h1>
+                                <ForumGame
+                                    gameId={gameDetails.id}
+                                    gameName={gameDetails.name}
+                                />
                             )}
                         </div>
 
