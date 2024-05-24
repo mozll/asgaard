@@ -12,7 +12,7 @@ const LoginPage = () => {
 
     const [loginMessage, setLoginMessage] = useState('')
 
-    // Set withCredentials to true globally for all Axios requests
+    // Set withCredentials to true globally for all Axios requests, should help keep me logged in
     axios.defaults.withCredentials = true
 
     const login = async () => {
@@ -28,7 +28,7 @@ const LoginPage = () => {
                 }
             )
 
-            // If login is successful set setLoggedIn to true, which will be stored/remembered in the AuthContext
+            // If login is successful set setLoggedIn to true, which will be remembered in the AuthContext
             if (response.data.message === 'Login successful') {
                 setLoggedIn(true)
                 navigate('/')
@@ -36,7 +36,6 @@ const LoginPage = () => {
                 setLoginMessage(response?.data?.message || 'Login failed')
                 setLoggedIn(false)
             }
-            // All error cases will be handled in the catch block
         } catch (error: any) {
             if (axios.isAxiosError(error) && error.response) {
                 setLoginMessage(error.response?.data?.message || 'Login failed')

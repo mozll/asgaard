@@ -28,25 +28,19 @@ const Result = ({ answers }: ResultProps) => {
 
     return (
         <div>
-            <h2>Based on your answers, we recommend:</h2>
+            <h2 className="mx-16 mt-8 font-bold">
+                Based on your answers, we recommend:
+            </h2>
             {isLoading ? (
                 <p>Loading...</p>
             ) : (
                 <div>
-                    {recommendedGames.map((game) => (
-                        <GameCard
-                            key={game.id}
-                            id={game.id}
-                            background_image={game.background_image}
-                            name={game.name}
-                            reviews_count={game.reviews_count}
-                            metacritic={game.metacritic}
-                            genres={game.genres}
-                            ratings_count={game.ratings_count}
-                            tags={game.tags}
-                            platforms={game.platforms}
-                        />
-                    ))}
+                    {' '}
+                    <ul className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 mt-4 mx-16">
+                        {recommendedGames.map((game) => (
+                            <GameCard key={game.id} {...game} />
+                        ))}
+                    </ul>
                 </div>
             )}
         </div>

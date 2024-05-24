@@ -222,14 +222,14 @@ export const getXboxGames = async () => {
         const response = await axiosInstance.get('/games', {
             params: {
                 key: RAWG_API_KEY,
-                platforms: 1, // Xbox platform ID
+                platforms: 1, // platform ID for Xbox
                 ordering: '-rating',
                 page_size: 25,
-                exclude_additions: true, // Exclude DLC and expansions
+                exclude_additions: true, // We dont want DLC or expansions
             },
         })
         response.data.results = response.data.results.filter((game: Game) => {
-            const minReviewsCount = 1000 // Adjust this value as needed
+            const minReviewsCount = 1000 // We want atleast 1000 reviews on the xbox games
 
             return game.ratings_count >= minReviewsCount
         })
@@ -258,19 +258,19 @@ export const getFeaturedGame = async () => {
         const response = await axiosInstance.get('/games', {
             params: {
                 key: RAWG_API_KEY,
-                page_size: 50, // Fetch a larger set of games
+                page_size: 50,
                 ratings: '>4.5',
             },
         })
 
-        // Select a random game from the fetched results
+        // select a random game from the fetched results
         const randomIndex = Math.floor(
             Math.random() * response.data.results.length
         )
 
         const gameId = response.data.results[randomIndex].id
 
-        // Call the api to get the description based on the game ID
+        // call the api to get the description based on the game ID
         const getDescription = await axiosInstance.get(`/games/${gameId}`, {
             params: {
                 key: RAWG_API_KEY,
@@ -279,7 +279,6 @@ export const getFeaturedGame = async () => {
 
         const description = getDescription.data.description_raw
 
-        // Return the selected game along with the description
         return {
             ...response.data.results[randomIndex],
             description: description,
@@ -298,10 +297,10 @@ export const getAllGameData = async (gameId: string) => {
             },
         })
 
-        // Extract the necessary data from the game response
+        // extract the data from the game response
         const gameData = gameResponse.data
 
-        // Next, fetch the screenshots of the game
+        // fetch the screenshots of the game
         const screenshotsResponse = await axiosInstance.get(
             `/games/${gameId}/screenshots`,
             {
@@ -319,21 +318,19 @@ export const getAllGameData = async (gameId: string) => {
             }
         )
 
-        // Extract the screenshots data
+        // extract the screenshots data and gives us 5 screenshots
         const screenshots = screenshotsResponse.data.results
         const limitedScreenshots = screenshots.slice(0, 5)
-        // Extract the stores data
+        // extract the stores data and gives us 10
         const stores = storesResponse.data.results
         const limitedStores = stores.slice(0, 10)
 
-        // Combine the game data with the screenshots data
+        // combine the game data with the screenshots and stores data
         const combinedData = {
             ...gameData,
             screenshots: limitedScreenshots,
             stores: limitedStores,
         }
-
-        // Return the combined data
 
         return combinedData
     } catch (error) {
@@ -342,53 +339,53 @@ export const getAllGameData = async (gameId: string) => {
     }
 }
 
-// Define genre and platform mappings
+// defining genre and platform mappings
 const genreMappings: {
     [questionIndex: number]: { [answerIndex: number]: string }
 } = {
     0: {
-        0: 'action', // Hero’s journey with epic battles
-        1: 'adventure', // Exploring mysterious and unknown worlds
-        2: 'role-playing-games-rpg', // Deep and immersive character development
-        3: 'strategy', // Strategic thinking and planning
-        4: 'shooter', // Fast-paced and intense action
-        5: 'puzzle', // Solving complex puzzles and challenges
-        6: 'simulation', // Building and managing systems
-        7: 'sports', // Engaging in competitive sports scenarios
+        0: 'action',
+        1: 'adventure',
+        2: 'role-playing-games-rpg',
+        3: 'strategy',
+        4: 'shooter',
+        5: 'puzzle',
+        6: 'simulation',
+        7: 'sports',
     },
     1: {
-        0: 'action', // Immersive graphics and realism
-        1: 'adventure', // Strong narrative and story
-        2: 'role-playing-games-rpg', // Character customization and progression
-        3: 'strategy', // Strategic decision-making
-        4: 'shooter', // Quick reflexes and precision
-        5: 'puzzle', // Mental challenges and logic puzzles
-        6: 'simulation', // Creative freedom and sandbox elements
-        7: 'sports', // Team-based and competitive play
+        0: 'action',
+        1: 'adventure',
+        2: 'role-playing-games-rpg',
+        3: 'strategy',
+        4: 'shooter',
+        5: 'puzzle',
+        6: 'simulation',
+        7: 'sports',
     },
     2: {
-        0: 'shooter', // Modern and futuristic settings
-        1: 'role-playing-games-rpg', // Fantasy and mythical worlds
-        2: 'strategy', // Historical and realistic settings
-        3: 'adventure', // Sci-fi and outer space adventures
-        4: 'simulation', // Urban and city landscapes
-        5: 'adventure', // Nature and wilderness exploration
-        6: 'puzzle', // Cartoonish and whimsical worlds
-        7: 'strategy', // Underground and dystopian themes
+        0: 'shooter',
+        1: 'role-playing-games-rpg',
+        2: 'strategy',
+        3: 'adventure',
+        4: 'simulation',
+        5: 'adventure',
+        6: 'puzzle',
+        7: 'strategy',
     },
 }
 
 const platformMappings: {
-    [questionIndex: number]: { [answerIndex: number]: number }
+    [questionIndex: number]: { [answerIndex: number]: number[] }
 } = {
     3: {
-        0: 4, // High-end gaming PC
-        1: 18, // Home console (e.g., PlayStation, Xbox)
-        2: 7, // Portable console (e.g., Nintendo Switch)
-        3: 3, // Mobile device (e.g., smartphone, tablet)
-        4: 13, // Older consoles (e.g., PlayStation 3, Xbox 360)
-        5: 8, // Handheld consoles (e.g., Nintendo 3DS, PS Vita)
-        6: 24, // Retro gaming systems (e.g., Atari, Commodore)
+        0: [4], // PC
+        1: [18, 187, 1, 186], // newer consoles
+        2: [7], // switch
+        3: [3, 21], // mobile
+        4: [16, 14], // older consoles
+        5: [8, 9], // nintendo 3ds & ps vita
+        6: [24, 74], // old gaming systems
     },
 }
 
@@ -396,12 +393,13 @@ export const getQuizGamesList = async (userAnswers: number[]) => {
     const selectedGenres: string[] = []
     const selectedPlatforms: number[] = []
 
+    // iterate through each user answer and its corresponding question index.
     userAnswers.forEach((answer, questionIndex) => {
         const genre = genreMappings[questionIndex]?.[answer]
-        if (genre) selectedGenres.push(genre)
+        if (genre) selectedGenres.push(genre) // if a valid genre is found, add it to the list
 
-        const platform = platformMappings[questionIndex]?.[answer]
-        if (platform) selectedPlatforms.push(platform)
+        const platforms = platformMappings[questionIndex]?.[answer]
+        if (platforms) selectedPlatforms.push(...platforms) // if platforms are found, add each one to the list
     })
 
     const genresParam = selectedGenres.join(',')
@@ -416,8 +414,6 @@ export const getQuizGamesList = async (userAnswers: number[]) => {
                 key: RAWG_API_KEY,
                 genres: genresParam || undefined,
                 platforms: platformsParam || undefined,
-                // I can decide the ordering, but the default is relevance, which is decided by RAWG.ios complex algorithm. Which is a mix of Match by Query Parameters, Popularity, Release Date
-                // ordering: '-released', This is for ordering by release date
             },
         })
 

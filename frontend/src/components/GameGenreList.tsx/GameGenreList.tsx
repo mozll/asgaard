@@ -97,7 +97,7 @@ const GameGenreList = () => {
             ? games.filter((game) =>
                   game.platforms.some(
                       (platform) =>
-                          // If platform.platform.id from type Game (from api-client) matches with the selectedPlatform.id that was selected in the dropdown, then filter the games on the available platforms
+                          // if platform.platform.id from type Game (from api-client) matches with the selectedPlatform.id that was selected in the dropdown, then filter the games on the available platforms
                           platform.platform.id.toString() ===
                           selectedPlatform.id
                   )

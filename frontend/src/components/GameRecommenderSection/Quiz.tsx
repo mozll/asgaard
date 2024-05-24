@@ -15,8 +15,10 @@ const Quiz = () => {
 
     const questions: QuestionData[] = [
         {
+            // question index 0 in the api client
             id: 1,
-            text: 'What kind of story do you prefer in games?',
+            text: 'When you play games, what kind of experience are you looking for?',
+
             options: [
                 'A hero’s journey with epic battles',
                 'Exploring mysterious and unknown worlds',
@@ -29,6 +31,7 @@ const Quiz = () => {
             ],
         },
         {
+            // question index 1 in the api client
             id: 2,
             text: 'What do you enjoy most about games?',
             options: [
@@ -43,8 +46,9 @@ const Quiz = () => {
             ],
         },
         {
+            // question index 2 in the api client
             id: 3,
-            text: 'What kind of gaming environment do you prefer?',
+            text: 'What setting or theme excites you the most?',
             options: [
                 'Modern and futuristic settings',
                 'Fantasy and mythical worlds',
@@ -57,6 +61,7 @@ const Quiz = () => {
             ],
         },
         {
+            // question index 3 in the api client
             id: 4,
             text: 'Which device do you most often use to play games?',
             options: [

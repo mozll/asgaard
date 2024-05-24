@@ -35,14 +35,13 @@ const ForumList = ({ gameId, gameName }: ForumListProps) => {
                 `http://localhost:8081/api/games/${gameId}/forum_posts`
             )
 
-            // No need for the sanitizedPosts variable or the mapping here
             setForumLists(response.data)
         } catch (error) {
             console.error('Error fetching forum posts:', error)
         }
     }
 
-    // Deletes the forum post when called
+    // deletes the forum post when called
     const handleDeleteClick = async (ForumListId: number) => {
         try {
             const response = await axios.delete(
@@ -70,7 +69,7 @@ const ForumList = ({ gameId, gameName }: ForumListProps) => {
     }
 
     const handleSubmitComment = async (postId: number) => {
-        if (newComment.trim() === '') return // Don't submit empty comments
+        if (newComment.trim() === '') return // if the comment is empty we do not continue
 
         try {
             await axios.post(
@@ -81,40 +80,33 @@ const ForumList = ({ gameId, gameName }: ForumListProps) => {
             )
 
             setNewComment('')
-            getForumList() // Refresh the forum list to show the new comment
+            getForumList() // should refresh the forum list to show the new comment, doesnt work yet.
         } catch (error) {
             console.error('Error submitting comment:', error)
-            // Handle the error (e.g., show an error message)
         }
     }
 
     return (
         <div>
-            {/* Title and Post Count */}
             <h1 className="font-bold text-xl">Forum Posts for {gameName}</h1>
             <p>
                 {ForumLists.length} Questzing Forum Post
                 {ForumLists.length !== 1 && 's'}
             </p>
-
-            {/* Error Message (if any) */}
             {deleteError && <div className="text-red-500">{deleteError}</div>}
 
-            {/* Conditional Rendering for Forum Posts */}
-            {ForumLists.length > 0 ? ( // If there are forum posts to display:
+            {ForumLists.length > 0 ? ( // if there are any forum posts we continue with .map function
                 <ul>
                     {ForumLists.map((post) => (
-                        // Render each forum post
                         <li
                             key={post.forum_post_id}
                             className="border-2 bg-qDark200 p-4 mt-2"
                         >
-                            {/* Post header */}
                             <div className="flex items-center justify-between mb-2">
                                 <p className="text-sm font-light">
                                     Post by {post.user_name}
                                 </p>
-                                {/* Delete button (only if the logged-in user is the author) */}
+                                {/* if the post user is the same as the logged in user, show the delete button */}
                                 {user && post.user_name === user.name && (
                                     <button
                                         onClick={() =>
@@ -128,18 +120,14 @@ const ForumList = ({ gameId, gameName }: ForumListProps) => {
                                     </button>
                                 )}
                             </div>
-
-                            {/* Post title and content */}
                             <h1 className="font-bold text-2xl mb-2">
                                 {post.forum_post_title}
                             </h1>
                             <p className="flex-grow font-light">
                                 {post.forum_post_post}
                             </p>
-
-                            {/* Comment Section */}
                             <div className="mt-4">
-                                {/* Button to toggle comment section */}
+                                {/* button to show comment field on the correct forum post */}
                                 <button
                                     onClick={() =>
                                         handleShowComments(post.forum_post_id)
@@ -150,8 +138,6 @@ const ForumList = ({ gameId, gameName }: ForumListProps) => {
                                         ? 'Hide Comments'
                                         : 'View/Add Comments'}
                                 </button>
-
-                                {/* Display comment list and form if comments are visible */}
                                 {showCommentsForPost === post.forum_post_id && (
                                     <div>
                                         <CommentList

@@ -27,7 +27,6 @@ const SignUpPage = () => {
             }
         } catch (error) {
             console.error('Error registering:', error)
-            // Consider adding error handling/display for the user here
         }
     }
 
@@ -61,7 +60,7 @@ const SignUpPage = () => {
                     </div>
                     <button
                         className="mt-4 w-full bg-qPrimary100 transition text-qDark100 py-2 px-4 rounded-full font-medium hover:bg-qPrimary300"
-                        type="button" // Ensure this is type="button" to avoid form submission
+                        type="button"
                         onClick={register}
                     >
                         Sign Up

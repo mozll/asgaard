@@ -21,12 +21,12 @@ const ProfilePage = ({ user }: ProfileProps) => {
         )
     }
 
-    const [activeTab, setActiveTab] = useState('Favorite Games') // Set initial active tab
+    const [activeTab, setActiveTab] = useState('Favorite Games') // favorite games is the initial tab
     const handleLogout = async () => {
         try {
             const response = await axios.post('http://localhost:8081/logout')
             if (response.status === 200) {
-                window.location.href = '/' // Reloads the site, so the bug with nav only updating on login is skipped. ( Temp )
+                window.location.href = '/' // reroutes us to front page
             } else {
                 console.error('Logout failed')
             }
@@ -52,7 +52,7 @@ const ProfilePage = ({ user }: ProfileProps) => {
             </div>
             <p
                 className="flex justify-center my-4"
-                title="This is your profile picture, generated from your username using RoboHash" // Add the title attribute
+                title="This is your profile picture, generated from your username using RoboHash"
             >
                 Your profile picture
                 <svg

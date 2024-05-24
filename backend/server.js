@@ -13,24 +13,30 @@ const session = require("express-session");
 
 const app = express();
 
+// this is needed for handling data sent in the request body as JSON.
 app.use(express.json());
 
+// start the server and listen for incoming requests on port 8081
 app.listen(8081, () => {
   console.log("listening");
 });
 
+// this allows our frontend to access our backend
 app.use(
   cors({
     origin: ["http://localhost:5173"],
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"], // Allow specific methods
-    allowedHeaders: ["Content-Type", "Authorization"], // Allow specific headers
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
+// this allows us to work with cookie-based authentication
 app.use(cookieParser());
+// parse URL-encoded form data, extended option allows for more complex objects
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// configure and use Express Session for user session management
 app.use(
   session({
     name: "nameOfCookieThatStoresSessionID",
@@ -47,6 +53,7 @@ app.use(
   })
 );
 
+// Establish a connection a database with information to use it
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -54,10 +61,11 @@ const db = mysql.createConnection({
   database: "test",
 });
 
-app.get("/", (req, res) => {
-  return res.json("from backend");
-});
+// app.get("/", (req, res) => {
+//   return res.json("from backend");
+// });
 
+// api call to get everything from the users table
 app.get("/users", (req, res) => {
   const sql = "SELECT * FROM users";
   db.query(sql, (err, data) => {
@@ -66,25 +74,25 @@ app.get("/users", (req, res) => {
   });
 });
 
+// API call to register a user
 app.post("/register", async (req, res) => {
   const { user_email, user_name, user_password } = req.body;
 
   try {
-    // Generate RoboHash URL
+    // generate RoboHash URL which is an image
     const imagePath =
       "https://robohash.org/" +
       crypto.createHash("md5").update(user_name).digest("hex");
 
-    // Fetch image data
+    // fetch image data
     const response = await axios.get(imagePath, {
       responseType: "arraybuffer",
     });
     const user_img = Buffer.from(response.data, "binary");
 
-    // Hash user password
+    // hash user password
     const hashedPassword = await bcrypt.hash(user_password, saltRounds);
 
-    // Database query
     db.query(
       "INSERT INTO users (user_email, user_name, user_password, user_sign_up_date, user_img) VALUES (?, ?, ?, NOW(), ?)",
       [user_email, user_name, hashedPassword, user_img],
@@ -126,10 +134,9 @@ app.post("/login", (req, res) => {
       }
 
       const user = result[0];
-
+      // comparing password input to database password
       bcrypt.compare(user_password, user.user_password, (error, response) => {
         if (response) {
-          // Passwords match
           const userSessionData = {
             id: user.user_id,
             name: user.user_name,
@@ -140,7 +147,6 @@ app.post("/login", (req, res) => {
           if (user.user_img) {
             userSessionData.img = user.user_img.toString("base64");
           }
-
           req.session.user = userSessionData;
           res.json({ message: "Login successful", user: req.session.user });
         } else {
@@ -150,12 +156,20 @@ app.post("/login", (req, res) => {
     }
   );
 });
+// api to check if the user is logged in and return their session data (if available).
+app.get("/user", (req, res) => {
+  if (req.session.user) {
+    res.send({ loggedIn: true, user: req.session.user });
+  } else {
+    res.send({ loggedIn: false });
+  }
+});
 
 app.post("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       console.error("Error destroying session:", err);
-      res.sendStatus(500); // Send an error status
+      res.sendStatus(500);
     } else {
       console.log("CLEARING SESSION");
       res.clearCookie("nameOfCookieThatStoresSessionID", { path: "/" });
@@ -165,32 +179,21 @@ app.post("/logout", (req, res) => {
   });
 });
 
-app.get("/user", (req, res) => {
-  if (req.session.user) {
-    res.send({ loggedIn: true, user: req.session.user });
-  } else {
-    res.send({ loggedIn: false });
-  }
-});
-
 // Creating a review on a game
 app.post("/api/games/:gameId/reviews", (req, res) => {
   const { gameId } = req.params;
   const { review, thumbs } = req.body;
 
-  // 1. Validation:
   if (!review || !thumbs || isNaN(gameId)) {
     return res.status(400).json({ error: "Invalid data provided" });
   }
 
-  // 2. Get User ID:
   const userId = req.session && req.session.user ? req.session.user.id : null;
 
   if (!userId) {
-    return res.status(401).json({ error: "Unauthorized: User not logged in" });
+    return res.status(401).json({ error: "Error: User not logged in" });
   }
 
-  // 3. Database Insertion:
   const sql = `
     INSERT INTO reviews (
       review_rawg_id, 
@@ -245,18 +248,16 @@ app.get("/api/games/:gameId/reviews", (req, res) => {
 app.delete("/api/games/:gameId/reviews/:reviewId", (req, res) => {
   const { gameId, reviewId } = req.params;
 
-  // 1. Validation
   if (isNaN(gameId) || isNaN(reviewId)) {
     return res.status(400).json({ error: "Invalid game or review ID" });
   }
 
-  // 2. Authentication & Authorization
   const userId = req.session && req.session.user ? req.session.user.id : null;
   if (!userId) {
-    return res.status(401).json({ error: "Unauthorized: User not logged in" });
+    return res.status(401).json({ error: "Error: User not logged in" });
   }
 
-  // 3. Database Deletion (with ownership check)
+  // database deletion (with ownership check)
   const sql = `
     DELETE FROM reviews 
     WHERE review_id = ? 
@@ -269,13 +270,13 @@ app.delete("/api/games/:gameId/reviews/:reviewId", (req, res) => {
       return res.status(500).json({ error: "Failed to delete review" });
     }
 
-    // Check if any rows were affected
+    // check if any rows were affected
     if (result.affectedRows === 0) {
       return res.status(404).json({
         error: "Review not found or you are not authorized to delete it",
       });
     } else {
-      res.sendStatus(200); // Successful deletion
+      res.sendStatus(200); // successful deletion
     }
   });
 });
@@ -283,19 +284,19 @@ app.delete("/api/games/:gameId/reviews/:reviewId", (req, res) => {
 // Creating a forum post
 app.post("/api/games/:gameId/forum_posts", (req, res) => {
   const { gameId } = req.params;
-  const { post_content, post_title } = req.body; // Get title from request body
+  const { post_content, post_title } = req.body; // get content and title from request body
 
   if (!post_content || !post_title || isNaN(gameId)) {
     return res.status(400).json({ error: "Invalid data provided" });
   }
 
-  // santizes input from user and puts ' ' marks around text in the database. This together with the VALUES (?,?) protects my database from SQL injections
+  // sanitizes input from user and puts ' ' marks around text in the database. This together with the VALUES (?,?) protects my database from SQL injections
   const sanitizedTitle = mysql.escape(post_title);
   const sanitizedContent = mysql.escape(post_content);
 
   const userId = req.session && req.session.user ? req.session.user.id : null;
   if (!userId) {
-    return res.status(401).json({ error: "Unauthorized: User not logged in" });
+    return res.status(401).json({ error: "Error: User not logged in" });
   }
 
   const sql = `
@@ -333,10 +334,10 @@ app.get("/api/games/:gameId/forum_posts", (req, res) => {
     forum_posts.forum_post_post,
     forum_posts.forum_post_created_at,
     users.user_name
-FROM forum_posts
-JOIN users ON forum_posts.forum_post_user_id = users.user_id
-WHERE forum_posts.forum_post_rawg_id = ? 
-ORDER BY forum_posts.forum_post_created_at DESC;
+    FROM forum_posts
+    JOIN users ON forum_posts.forum_post_user_id = users.user_id
+    WHERE forum_posts.forum_post_rawg_id = ? 
+    ORDER BY forum_posts.forum_post_created_at DESC;
   `;
 
   db.query(sql, [gameId], (err, rows) => {
@@ -364,7 +365,7 @@ app.delete("/api/games/:gameId/forum_posts/:forumPostId", (req, res) => {
 
   const userId = req.session && req.session.user ? req.session.user.id : null;
   if (!userId) {
-    return res.status(401).json({ error: "Unauthorized: User not logged in" });
+    return res.status(401).json({ error: "Error: User not logged in" });
   }
 
   const sql = `
@@ -390,7 +391,6 @@ app.delete("/api/games/:gameId/forum_posts/:forumPostId", (req, res) => {
   });
 });
 
-// NOT IMPLEMENTED YET
 // Creating a comment on a forum post
 app.post("/api/forum_posts/:postId/comments", (req, res) => {
   const { postId } = req.params;

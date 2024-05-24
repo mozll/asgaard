@@ -38,7 +38,7 @@ const SwiperContainer = ({ games }: SwiperContainerProps) => {
             }
         }
 
-        handleResize() // Call once initially to set the initial slidesPerView
+        handleResize() // call once initially to set the initial slidesPerView
 
         window.addEventListener('resize', handleResize)
 
