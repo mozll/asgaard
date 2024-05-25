@@ -13,7 +13,8 @@ const CommentList = ({ postId }: CommentListProps) => {
 
     useEffect(() => {
         getComments()
-    }, [])
+        console.log('Is this looping')
+    }, [comments.length]) // Right now it only runs once, so the new comment is only added when we reload the page. If we include [reviews] above, then it infinite loops, which we dont want. TO DO, EXACT SAME ISSUE WITH REV
 
     const getComments = async () => {
         try {

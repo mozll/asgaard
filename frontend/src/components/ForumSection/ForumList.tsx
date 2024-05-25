@@ -24,10 +24,12 @@ const ForumList = ({ gameId, gameName }: ForumListProps) => {
         number | null
     >(null)
     const [newComment, setNewComment] = useState('')
+    const [submitSuccess, setSubmitSuccess] = useState(false)
+    const [submitFail, setSubmitFail] = useState(false)
 
     useEffect(() => {
         getForumList()
-    }, [gameId])
+    }, [gameId, newComment])
 
     const getForumList = async () => {
         try {
@@ -72,15 +74,20 @@ const ForumList = ({ gameId, gameName }: ForumListProps) => {
         if (newComment.trim() === '') return // if the comment is empty we do not continue
 
         try {
-            await axios.post(
+            const response = await axios.post(
                 `http://localhost:8081/api/forum_posts/${postId}/comments`,
                 {
                     comment_content: newComment,
                 }
             )
+            if (response.status === 200) {
+                setSubmitSuccess(true)
+                setSubmitFail(false)
+            } else {
+                setSubmitFail(true)
+            }
 
             setNewComment('')
-            getForumList() // should refresh the forum list to show the new comment, doesnt work yet.
         } catch (error) {
             console.error('Error submitting comment:', error)
         }
@@ -139,7 +146,13 @@ const ForumList = ({ gameId, gameName }: ForumListProps) => {
                                         : 'View/Add Comments'}
                                 </button>
                                 {showCommentsForPost === post.forum_post_id && (
-                                    <div>
+                                    <div
+                                        key={
+                                            submitSuccess
+                                                ? 'submitted'
+                                                : 'not-submitted'
+                                        }
+                                    >
                                         <CommentList
                                             postId={post.forum_post_id}
                                         />

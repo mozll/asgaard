@@ -47,7 +47,7 @@ const ForumGame = ({ gameId, gameName }: ForumGameProps) => {
     }
 
     return (
-        <div className="">
+        <div key={submitSuccess ? 'submitted' : 'not-submitted'} className="">
             <div className="flex justify-between items-center">
                 <h1 className="font-bold text-lg">Write a forum post</h1>
             </div>
