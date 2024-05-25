@@ -21,7 +21,7 @@ interface ReviewData {
 
 const ReviewList = ({ gameId, gameName }: ReviewProps) => {
     const { user } = useContext(AuthContext)
-    const [reviews, setReviews] = useState<ReviewData[]>([]) // Use an array for multiple reviews
+    const [reviews, setReviews] = useState<ReviewData[]>([]) // using an array for multiple reviews
 
     useEffect(() => {
         getReview()

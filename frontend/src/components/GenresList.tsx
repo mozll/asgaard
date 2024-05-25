@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { getGenresList, Game } from '../../services/api-client' // Import getGenresList and Game
+import { getGenresList, Game } from '../../services/api-client'
 import '../styles.css'
 
 function GenresList() {
-    const [genres, setGenres] = useState<Game[]>([]) // Use Game as the type for genres
+    const [genres, setGenres] = useState<Game[]>([]) // using Game type from api client as the type for genres
 
     useEffect(() => {
         fetchGenresList()
@@ -11,7 +11,7 @@ function GenresList() {
 
     const fetchGenresList = async () => {
         try {
-            const genresData = await getGenresList() // Call getGenresList
+            const genresData = await getGenresList()
             setGenres(genresData)
         } catch (error) {
             console.error('Error fetching Genres:', error)

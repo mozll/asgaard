@@ -72,10 +72,10 @@ const Navbar = ({ navItems, user }: NavbarProps) => {
     const handleGameClick = (gameId: number) => {
         navigate(`/game/${gameId}`)
         setShowDropdown(false)
-        setSearchTerm('') // Clear the search term
+        setSearchTerm('') // Clear the search area after click
     }
 
-    // Effect to handle URL changes and reset the search state
+    // useEffect to handle URL changes and reset the search state
     useEffect(() => {
         setSearchTerm('')
         setSearchResults([])

@@ -9,7 +9,7 @@ const TopTagsBar = () => {
     const navigate = useNavigate()
 
     const { genreSlug: activeGenreFromUrl } = useParams()
-    const [activeGenre, setActiveGenre] = useState(activeGenreFromUrl) // Initially set from URL
+    const [activeGenre, setActiveGenre] = useState(activeGenreFromUrl)
 
     const handleTagClick = (genreName: string) => {
         const genreSlug = genreName.toLowerCase().replace(/ /g, '-')
@@ -29,18 +29,17 @@ const TopTagsBar = () => {
                     'loading status',
                     isLoading
                 )
-                setGenres(['Action', 'Adventure', 'RPG']) // Fallback genres
+                setGenres(['Action', 'Adventure', 'RPG']) // fallback genres, only applied if earlier call failed
             } finally {
                 setIsLoading(false)
             }
         }
 
-        fetchGenresData() // Call the function to fetch genres
-    }, []) // Runs once since empty
+        fetchGenresData()
+    }, [])
 
     return (
         <div>
-            {/* ... (loading indicator) ... */}
             <ul className="justify-center font-light flex flex-wrap lg:mx-64 mx-20">
                 {genres.map((genre) => (
                     <li key={genre} className="flex items-center mr-4 mb-2">

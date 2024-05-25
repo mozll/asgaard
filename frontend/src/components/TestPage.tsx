@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import '../styles.css' // Import your global styles
-
-// other imports and components
+import '../styles.css'
 
 interface Test {
     user_name: string

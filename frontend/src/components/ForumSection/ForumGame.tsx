@@ -26,7 +26,7 @@ const ForumGame = ({ gameId, gameName }: ForumGameProps) => {
         try {
             const response = await axios.post(
                 `http://localhost:8081/api/games/${gameId}/forum_posts`,
-                { post_content: forumPost, post_title: forumTitle } // Send title with content
+                { post_content: forumPost, post_title: forumTitle } // this means we send the forumPost from here to our backend as post_content
             )
 
             if (response.status === 200) {
@@ -47,7 +47,7 @@ const ForumGame = ({ gameId, gameName }: ForumGameProps) => {
     }
 
     return (
-        <div className="">
+        <div key={submitSuccess ? 'submitted' : 'not-submitted'} className="">
             <div className="flex justify-between items-center">
                 <h1 className="font-bold text-lg">Write a forum post</h1>
             </div>

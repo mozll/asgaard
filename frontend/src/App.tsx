@@ -9,9 +9,10 @@ import Footer from './components/Footer/Footer'
 import GamePage from './pages/GamePage'
 import SignUpPage from './pages/SignUpPage'
 import LoginPage from './pages/LoginPage'
-import './styles.css' // Import your global styles
+import './styles.css'
 import ProfilePage from './pages/ProfilePage'
 import GameGenreList from './components/GameGenreList.tsx/GameGenreList'
+import Quiz from './components/GameRecommenderSection/Quiz'
 
 export interface User {
     id: number
@@ -23,7 +24,7 @@ export interface User {
 interface AuthContextType {
     loggedIn: boolean
     setLoggedIn: (loggedIn: boolean) => void
-    user: User | null // User can be null if not logged in
+    user: User | null // User should be null if not logged in
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -41,6 +42,7 @@ function App() {
         { link: '/', title: 'Games' },
         { link: '/news', title: 'News' },
         { link: '/faq', title: 'FAQ' },
+        { link: '/gamerecommender', title: 'Game Recommender' },
     ]
 
     useEffect(() => {
@@ -49,18 +51,22 @@ function App() {
                 const response = await axios.get('http://localhost:8081/user', {
                     withCredentials: true,
                 })
-                setLoggedIn(response.data.loggedIn)
-                setUser(response.data.user)
+
+                if (response.data.loggedIn) {
+                    setLoggedIn(true)
+                    setUser(response.data.user)
+                } else {
+                    setLoggedIn(false)
+                    setUser(null)
+                }
             } catch (error) {
                 console.error('Error fetching user data:', error)
                 setLoggedIn(false)
                 setUser(null)
             }
         }
-
-        if (loggedIn) {
-            fetchUserData() // Fetch user data only if logged in
-        }
+        // Fetch user data when the component mounts and when 'loggedIn' changes
+        fetchUserData()
     }, [loggedIn])
 
     return (
@@ -99,6 +105,7 @@ function App() {
                         </div>
                     }
                 />
+                <Route path="/gamerecommender" element={<Quiz />} />
                 <Route path="/genres" element={<GenresList />} />
                 <Route path="/signup" element={<SignUpPage />} />
                 <Route path="/login" element={<LoginPage />} />

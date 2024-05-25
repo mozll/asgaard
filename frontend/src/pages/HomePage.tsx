@@ -1,6 +1,6 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
-import '../styles.css' // Import your global styles
+import '../styles.css'
 
 import SwiperContainer from '../components/SwiperContainer/SwiperContainer'
 import FeaturedGameCard from '../components/GameCard/FeaturedGameCard'
@@ -14,8 +14,6 @@ import {
     getFeaturedGame,
 } from '../../services/api-client'
 import TopTagsBar from '../components/Nav/TopTagsBar'
-
-// other imports and components
 
 const HomePage = () => {
     const [topMetacriticGames, setTopMetacriticGames] = useState<Game[]>([])

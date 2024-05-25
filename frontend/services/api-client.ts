@@ -222,14 +222,14 @@ export const getXboxGames = async () => {
         const response = await axiosInstance.get('/games', {
             params: {
                 key: RAWG_API_KEY,
-                platforms: 1, // Xbox platform ID
+                platforms: 1, // platform ID for Xbox
                 ordering: '-rating',
                 page_size: 25,
-                exclude_additions: true, // Exclude DLC and expansions
+                exclude_additions: true, // We dont want DLC or expansions
             },
         })
         response.data.results = response.data.results.filter((game: Game) => {
-            const minReviewsCount = 1000 // Adjust this value as needed
+            const minReviewsCount = 1000 // We want atleast 1000 reviews on the xbox games
 
             return game.ratings_count >= minReviewsCount
         })
@@ -258,19 +258,19 @@ export const getFeaturedGame = async () => {
         const response = await axiosInstance.get('/games', {
             params: {
                 key: RAWG_API_KEY,
-                page_size: 50, // Fetch a larger set of games
+                page_size: 50,
                 ratings: '>4.5',
             },
         })
 
-        // Select a random game from the fetched results
+        // select a random game from the fetched results
         const randomIndex = Math.floor(
             Math.random() * response.data.results.length
         )
 
         const gameId = response.data.results[randomIndex].id
 
-        // Call the api to get the description based on the game ID
+        // call the api to get the description based on the game ID
         const getDescription = await axiosInstance.get(`/games/${gameId}`, {
             params: {
                 key: RAWG_API_KEY,
@@ -279,7 +279,6 @@ export const getFeaturedGame = async () => {
 
         const description = getDescription.data.description_raw
 
-        // Return the selected game along with the description
         return {
             ...response.data.results[randomIndex],
             description: description,
@@ -298,10 +297,10 @@ export const getAllGameData = async (gameId: string) => {
             },
         })
 
-        // Extract the necessary data from the game response
+        // extract the data from the game response
         const gameData = gameResponse.data
 
-        // Next, fetch the screenshots of the game
+        // fetch the screenshots of the game
         const screenshotsResponse = await axiosInstance.get(
             `/games/${gameId}/screenshots`,
             {
@@ -319,25 +318,110 @@ export const getAllGameData = async (gameId: string) => {
             }
         )
 
-        // Extract the screenshots data
+        // extract the screenshots data and gives us 5 screenshots
         const screenshots = screenshotsResponse.data.results
         const limitedScreenshots = screenshots.slice(0, 5)
-        // Extract the stores data
+        // extract the stores data and gives us 10
         const stores = storesResponse.data.results
         const limitedStores = stores.slice(0, 10)
 
-        // Combine the game data with the screenshots data
+        // combine the game data with the screenshots and stores data
         const combinedData = {
             ...gameData,
             screenshots: limitedScreenshots,
             stores: limitedStores,
         }
 
-        // Return the combined data
-
         return combinedData
     } catch (error) {
         console.error('Error fetching game data:', error)
         throw error
+    }
+}
+
+// defining genre and platform mappings
+const genreMappings: {
+    [questionIndex: number]: { [answerIndex: number]: string }
+} = {
+    0: {
+        0: 'action',
+        1: 'adventure',
+        2: 'role-playing-games-rpg',
+        3: 'strategy',
+        4: 'shooter',
+        5: 'puzzle',
+        6: 'simulation',
+        7: 'sports',
+    },
+    1: {
+        0: 'action',
+        1: 'adventure',
+        2: 'role-playing-games-rpg',
+        3: 'strategy',
+        4: 'shooter',
+        5: 'puzzle',
+        6: 'simulation',
+        7: 'sports',
+    },
+    2: {
+        0: 'shooter',
+        1: 'role-playing-games-rpg',
+        2: 'strategy',
+        3: 'adventure',
+        4: 'simulation',
+        5: 'adventure',
+        6: 'puzzle',
+        7: 'strategy',
+    },
+}
+
+const platformMappings: {
+    [questionIndex: number]: { [answerIndex: number]: number[] }
+} = {
+    3: {
+        0: [4], // PC
+        1: [18, 187, 1, 186], // newer consoles
+        2: [7], // switch
+        3: [3, 21], // mobile
+        4: [16, 14], // older consoles
+        5: [8, 9], // nintendo 3ds & ps vita
+        6: [24, 74], // old gaming systems
+    },
+}
+
+export const getQuizGamesList = async (userAnswers: number[]) => {
+    const selectedGenres: string[] = []
+    const selectedPlatforms: number[] = []
+
+    // iterate through each user answer and its corresponding question index.
+    userAnswers.forEach((answer, questionIndex) => {
+        const genre = genreMappings[questionIndex]?.[answer]
+        if (genre) selectedGenres.push(genre) // if a valid genre is found, add it to the list
+
+        const platforms = platformMappings[questionIndex]?.[answer]
+        if (platforms) selectedPlatforms.push(...platforms) // if platforms are found, add each one to the list
+    })
+
+    const genresParam = selectedGenres.join(',')
+    const platformsParam = selectedPlatforms.join(',')
+
+    console.log('Selected Genres:', genresParam)
+    console.log('Selected Platforms:', platformsParam)
+
+    try {
+        const response = await axiosInstance.get('/games', {
+            params: {
+                key: RAWG_API_KEY,
+                genres: genresParam || undefined,
+                platforms: platformsParam || undefined,
+            },
+        })
+
+        console.log('API Response:', response.data.results)
+
+        return response.data.results
+    } catch (error) {
+        console.error('Error fetching games:', error)
+        throw new Error('Error fetching games: ' + error)
     }
 }
