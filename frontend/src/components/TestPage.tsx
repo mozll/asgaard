@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import '../styles.css'
 
 interface Test {
@@ -11,7 +11,7 @@ function TestPage() {
     const [data, setData] = useState<Test[]>([])
 
     useEffect(() => {
-        fetch('http://localhost:8081/users') // if i actually search for this in the URL i also get the data shown
+        fetch('${VITE_QUESTZING_API_URL}/users') // if i actually search for this in the URL i also get the data shown
             .then((res) => res.json())
             .then((data) => setData(data))
             .catch((err) => console.log(err))

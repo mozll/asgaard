@@ -1,5 +1,3 @@
-import React from 'react'
-
 export interface CommentProps {
     comment: {
         comment_id: number

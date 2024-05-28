@@ -83,6 +83,16 @@ interface Platform {
     }
 }
 
+const isProduction = process.env.NODE_ENV === 'production'
+const apiUrl = isProduction
+    ? 'http://139.144.73.204:8081'
+    : 'http://localhost:8081'
+
+export const VITE_QUESTZING_API_URL = apiUrl
+
+console.log('API URL:', VITE_QUESTZING_API_URL)
+console.log('isProduction apiURL', apiUrl)
+
 const RAWG_API_KEY = import.meta.env.VITE_RAWG_API_KEY
 
 const axiosInstance = axios.create({

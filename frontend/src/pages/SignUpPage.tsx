@@ -1,7 +1,7 @@
-import React from 'react'
 import { useState } from 'react'
 import { useNavigate, NavLink } from 'react-router-dom'
 import axios from 'axios'
+import { VITE_QUESTZING_API_URL } from '../../services/api-client'
 
 axios.defaults.withCredentials = true
 
@@ -13,8 +13,13 @@ const SignUpPage = () => {
 
     const register = async () => {
         try {
+            console.log(VITE_QUESTZING_API_URL, '<- NO IMPORT META')
+            console.log(
+                import.meta.env.VITE_QUESTZING_API_URL,
+                ' <-THIS IS THE IMPORT.META'
+            )
             const response = await axios.post(
-                'http://localhost:8081/register',
+                `${VITE_QUESTZING_API_URL}/register`,
                 {
                     user_email: emailReg,
                     user_name: usernameReg,
@@ -23,10 +28,18 @@ const SignUpPage = () => {
             )
 
             if (response.data.message === 'User registered successfully') {
+                console.log(
+                    import.meta.env.VITE_QUESTZING_API_URL,
+                    ' <-THIS IS THE IMPORT.META 2'
+                )
                 navigate('/login')
             }
         } catch (error) {
             console.error('Error registering:', error)
+            console.log(
+                import.meta.env.VITE_QUESTZING_API_URL,
+                ' <-THIS IS THE IMPORT.META 3'
+            )
         }
     }
 

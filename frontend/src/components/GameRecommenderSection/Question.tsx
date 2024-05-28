@@ -1,5 +1,3 @@
-import React from 'react'
-
 interface QuestionData {
     id: number
     text: string

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { getGenresList, Game } from '../../services/api-client'
 import '../styles.css'
 

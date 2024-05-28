@@ -1,4 +1,3 @@
-import React from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { User } from '../../App'
 import QuestzingLogo from '../../assets/Questzing.svg'
@@ -20,6 +19,7 @@ const Navbar = ({ navItems, user }: NavbarProps) => {
     const [searchTerm, setSearchTerm] = useState('')
     const [searchResults, setSearchResults] = useState<Game[]>([])
     const [showDropdown, setShowDropdown] = useState(false)
+    const [showMenu, setShowMenu] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
     const dropdownRef = useRef<HTMLDivElement>(null)
     const navigate = useNavigate()
@@ -82,34 +82,32 @@ const Navbar = ({ navItems, user }: NavbarProps) => {
         setShowDropdown(false)
     }, [location.pathname])
 
+    const handleToggleMenu = () => {
+        setShowMenu(!showMenu)
+    }
+
     return (
-        <div className="flex justify-between mx-16 my-8 items-center">
-            <div>
+        <div className="flex  justify-between mx-4 md:mx-16 my-8 items-center">
+            <div className="bg-qPrimary200 block :hidden">
                 <NavLink to="/">
                     <img src={QuestzingLogo} alt="Questzing logo" />
                 </NavLink>
             </div>
-            <div className="flex-grow flex justify-center items-center gap-10">
-                <nav className="flex gap-10 text-lg">
-                    {navItems.map((navItem, index) => (
-                        <NavLink key={index} to={navItem.link}>
-                            {navItem.title}
-                        </NavLink>
-                    ))}
-                </nav>
-                <div className="relative">
+            <div className="flex-grow flex  justify-between items-center gap-10">
+                {/* Search input and results */}
+                <div className="relative bg-qSecondary200 flex-grow md:flex-grow-0 sm:order-2">
                     <input
                         ref={inputRef}
-                        className="text-qDark200 rounded-md px-4 py-1 mb-1"
+                        className="text-qDark200 rounded-md px-4 py-1 mb-1 w-48 md:w-auto"
                         type="text"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         placeholder="Search for games..."
                     />
-                    {showDropdown && searchResults.length > 0 ? (
+                    {showDropdown && searchResults.length > 0 && (
                         <div
                             ref={dropdownRef}
-                            className="absolute top-full left-0 bg-white rounded-md shadow-md z-10 w-full max-h-64 overflow-y-auto text-black"
+                            className="absolute  top-full left-0 bg-white rounded-md shadow-md z-10 w-full max-h-64 overflow-y-auto text-black"
                         >
                             <ul>
                                 {searchResults.map((game) => (
@@ -123,19 +121,46 @@ const Navbar = ({ navItems, user }: NavbarProps) => {
                                 ))}
                             </ul>
                         </div>
-                    ) : null}
+                    )}
                 </div>
-            </div>
-            <div>
-                {user ? (
-                    <NavLink to="/profile" className="text-lg">
-                        {user.name}
-                    </NavLink>
-                ) : (
-                    <NavLink to="/login" className="text-lg">
-                        Login
-                    </NavLink>
-                )}
+                {/* Hamburger button for small screens */}
+                <button
+                    className="block lg:hidden text-2xl order-3"
+                    onClick={handleToggleMenu}
+                >
+                    &#9776; {/* Hamburger icon */}
+                </button>
+                {/* Navbar links and user profile/login */}
+                <nav
+                    className={`flex-col ${showMenu ? 'flex' : 'hidden'} bg-qSecondary200 mx-auto md:flex md:flex-row gap-10 text-lg absolute md:relative right-0 md:right-auto order-4 md:order-1`}
+                >
+                    {navItems.map((navItem, index) => (
+                        <NavLink
+                            key={index}
+                            to={navItem.link}
+                            onClick={() => setShowMenu(false)}
+                        >
+                            {navItem.title}
+                        </NavLink>
+                    ))}
+                    {user ? (
+                        <NavLink
+                            to="/profile"
+                            className="text-lg"
+                            onClick={() => setShowMenu(false)}
+                        >
+                            {user.name}
+                        </NavLink>
+                    ) : (
+                        <NavLink
+                            to="/login"
+                            className="text-lg"
+                            onClick={() => setShowMenu(false)}
+                        >
+                            Login
+                        </NavLink>
+                    )}
+                </nav>
             </div>
         </div>
     )

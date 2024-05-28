@@ -4,7 +4,7 @@ const cors = require("cors");
 const axios = require("axios");
 
 const crypto = require("crypto");
-const bcrypt = require("bcrypt");
+const bcryptjs = require("bcryptjs");
 const saltRounds = 10;
 
 const bodyParser = require("body-parser");
@@ -13,18 +13,44 @@ const session = require("express-session");
 
 const app = express();
 
+require("dotenv").config();
+
+const dbHost = process.env.DB_HOST || "localhost";
+const dbUser = process.env.DB_USER || "root";
+const dbPassword = process.env.DB_PASSWORD || "";
+const dbName =
+  process.env.NODE_ENV === "production"
+    ? process.env.DB_DATABASE || "questzingDB"
+    : "questzing-db";
+const dbPort = process.env.DB_PORT || 3306;
+
+// create a connection a database with information to use it
+const db = mysql.createConnection({
+  host: dbHost,
+  user: dbUser,
+  password: dbPassword,
+  database: dbName,
+  port: dbPort,
+});
 // this is needed for handling data sent in the request body as JSON.
 app.use(express.json());
 
 // start the server and listen for incoming requests on port 8081
-app.listen(8081, () => {
+const port = process.env.PORT || 8081;
+
+app.listen(port, () => {
   console.log("listening");
 });
 
 // this allows our frontend to access our backend
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: [
+      "http://localhost:5173",
+      "http://139.144.73.204:5173", // VPS IP with my frontend port
+      "http://139.144.73.204:80", // VPS IP with my port 80
+      "http://139.144.73.204",
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -36,7 +62,7 @@ app.use(cookieParser());
 // parse URL-encoded form data, extended option allows for more complex objects
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// configure and use Express Session for user session management
+// express session
 app.use(
   session({
     name: "nameOfCookieThatStoresSessionID",
@@ -52,14 +78,6 @@ app.use(
     },
   })
 );
-
-// Establish a connection a database with information to use it
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "test",
-});
 
 // app.get("/", (req, res) => {
 //   return res.json("from backend");
@@ -91,7 +109,7 @@ app.post("/register", async (req, res) => {
     const user_img = Buffer.from(response.data, "binary");
 
     // hash user password
-    const hashedPassword = await bcrypt.hash(user_password, saltRounds);
+    const hashedPassword = await bcryptjs.hash(user_password, saltRounds);
 
     db.query(
       "INSERT INTO users (user_email, user_name, user_password, user_sign_up_date, user_img) VALUES (?, ?, ?, NOW(), ?)",
@@ -123,7 +141,7 @@ app.post("/login", (req, res) => {
   db.query(
     "SELECT * FROM users WHERE user_name = ?",
     user_name,
-    (err, result) => {
+    async (err, result) => {
       if (err) {
         console.error("Database Error:", err);
         return res.status(500).json({ error: "Database error" });
@@ -134,16 +152,17 @@ app.post("/login", (req, res) => {
       }
 
       const user = result[0];
-      // comparing password input to database password
-      bcrypt.compare(user_password, user.user_password, (error, response) => {
-        if (response) {
+      try {
+        const isMatch = await bcryptjs.compare(
+          user_password,
+          user.user_password
+        ); // Compare passwords correctly using await
+        if (isMatch) {
           const userSessionData = {
             id: user.user_id,
             name: user.user_name,
             email: user.user_email,
           };
-
-          // Handle user_img (BLOB data)
           if (user.user_img) {
             userSessionData.img = user.user_img.toString("base64");
           }
@@ -152,7 +171,10 @@ app.post("/login", (req, res) => {
         } else {
           res.status(401).json({ message: "Incorrect password" });
         }
-      });
+      } catch (error) {
+        console.error("Error comparing passwords:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+      }
     }
   );
 });
