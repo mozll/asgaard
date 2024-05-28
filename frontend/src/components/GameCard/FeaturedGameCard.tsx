@@ -1,4 +1,3 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 import { Game } from '../../../services/api-client'
 import defaultImage from '../../assets/default-image-icon-missing-picture-page-vector-40546530.jpg'

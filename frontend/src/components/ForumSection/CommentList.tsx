@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import Comment, { CommentProps } from './Comment'
+import { VITE_QUESTZING_API_URL } from '../../../services/api-client'
 
 interface CommentListProps {
     postId: number
@@ -19,7 +20,7 @@ const CommentList = ({ postId }: CommentListProps) => {
     const getComments = async () => {
         try {
             const response = await axios.get<CommentProps['comment'][]>(
-                `http://localhost:8081/api/forum_posts/${postId}/comments`
+                `${VITE_QUESTZING_API_URL}/api/forum_posts/${postId}/comments`
             )
             setComments(response.data)
             setIsLoading(false)

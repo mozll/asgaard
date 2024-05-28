@@ -1,9 +1,9 @@
-import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { User } from '../App'
 import axios from 'axios'
 import { useState } from 'react'
 import GamesList from '../components/GamesList'
+import { VITE_QUESTZING_API_URL } from '../../services/api-client'
 
 interface ProfileProps {
     user: User | null
@@ -24,7 +24,9 @@ const ProfilePage = ({ user }: ProfileProps) => {
     const [activeTab, setActiveTab] = useState('Favorite Games') // favorite games is the initial tab
     const handleLogout = async () => {
         try {
-            const response = await axios.post('http://localhost:8081/logout')
+            const response = await axios.post(
+                `${VITE_QUESTZING_API_URL}/logout`
+            )
             if (response.status === 200) {
                 window.location.href = '/' // reroutes us to front page
             } else {

@@ -1,7 +1,8 @@
-import React, { ChangeEvent, useContext, useEffect, useState } from 'react'
+import { ChangeEvent, useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import { AuthContext } from '../../App'
 import CommentList from './CommentList'
+import { VITE_QUESTZING_API_URL } from '../../../services/api-client'
 
 interface ForumListProps {
     gameId: number
@@ -25,6 +26,7 @@ const ForumList = ({ gameId, gameName }: ForumListProps) => {
     >(null)
     const [newComment, setNewComment] = useState('')
     const [submitSuccess, setSubmitSuccess] = useState(false)
+    // @ts-expect-error - need to revisit bug when time
     const [submitFail, setSubmitFail] = useState(false)
 
     useEffect(() => {
@@ -34,7 +36,7 @@ const ForumList = ({ gameId, gameName }: ForumListProps) => {
     const getForumList = async () => {
         try {
             const response = await axios.get<ForumListData[]>(
-                `http://localhost:8081/api/games/${gameId}/forum_posts`
+                `${VITE_QUESTZING_API_URL}/api/games/${gameId}/forum_posts`
             )
 
             setForumLists(response.data)
@@ -47,7 +49,7 @@ const ForumList = ({ gameId, gameName }: ForumListProps) => {
     const handleDeleteClick = async (ForumListId: number) => {
         try {
             const response = await axios.delete(
-                `http://localhost:8081/api/games/${gameId}/forum_posts/${ForumListId}`
+                `${VITE_QUESTZING_API_URL}/api/games/${gameId}/forum_posts/${ForumListId}`
             )
             if (response.status === 200) {
                 getForumList()
@@ -75,7 +77,7 @@ const ForumList = ({ gameId, gameName }: ForumListProps) => {
 
         try {
             const response = await axios.post(
-                `http://localhost:8081/api/forum_posts/${postId}/comments`,
+                `${VITE_QUESTZING_API_URL}/api/forum_posts/${postId}/comments`,
                 {
                     comment_content: newComment,
                 }

@@ -1,4 +1,3 @@
-import React from 'react'
 import { useEffect, useState } from 'react'
 import { getGenres } from '../../../services/api-client'
 import { useNavigate, useParams } from 'react-router-dom'

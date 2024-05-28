@@ -1,6 +1,7 @@
-import React, { useState, FormEvent, ChangeEvent } from 'react'
+import { useState, FormEvent, ChangeEvent } from 'react'
 import axios from 'axios'
 import ReviewList from './ReviewList'
+import { VITE_QUESTZING_API_URL } from '../../../services/api-client'
 
 interface ReviewGameProps {
     gameId: number
@@ -23,7 +24,7 @@ const ReviewGame = ({ gameId, gameName }: ReviewGameProps) => {
 
         try {
             const response = await axios.post(
-                `http://localhost:8081/api/games/${gameId}/reviews`,
+                `${VITE_QUESTZING_API_URL}/api/games/${gameId}/reviews`,
                 {
                     review,
                     thumbs,

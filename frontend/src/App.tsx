@@ -1,4 +1,3 @@
-import React from 'react'
 import { createContext, useEffect, useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import axios from 'axios'
@@ -13,6 +12,7 @@ import './styles.css'
 import ProfilePage from './pages/ProfilePage'
 import GameGenreList from './components/GameGenreList.tsx/GameGenreList'
 import Quiz from './components/GameRecommenderSection/Quiz'
+import { VITE_QUESTZING_API_URL } from '../services/api-client'
 
 export interface User {
     id: number
@@ -29,6 +29,7 @@ interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType>({
     loggedIn: false,
+    // @ts-expect-error - need to revisit loggedIn bug when time
     setLoggedIn: (loggedIn: boolean) => {},
     user: null,
     // Got error with ESLint when these were on
@@ -40,7 +41,7 @@ function App() {
 
     const navItems = [
         { link: '/', title: 'Games' },
-        { link: '/news', title: 'News' },
+        // { link: '/news', title: 'News' },
         { link: '/faq', title: 'FAQ' },
         { link: '/gamerecommender', title: 'Game Recommender' },
     ]
@@ -48,9 +49,12 @@ function App() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await axios.get('http://localhost:8081/user', {
-                    withCredentials: true,
-                })
+                const response = await axios.get(
+                    `${VITE_QUESTZING_API_URL}/user`,
+                    {
+                        withCredentials: true,
+                    }
+                )
 
                 if (response.data.loggedIn) {
                     setLoggedIn(true)

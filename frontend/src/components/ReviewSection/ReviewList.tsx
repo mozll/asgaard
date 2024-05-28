@@ -1,7 +1,8 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { AuthContext } from '../../App'
+import { VITE_QUESTZING_API_URL } from '../../../services/api-client'
 
 interface ReviewProps {
     gameId: number
@@ -32,7 +33,7 @@ const ReviewList = ({ gameId, gameName }: ReviewProps) => {
     const getReview = async () => {
         try {
             const response = await axios.get<ReviewData[]>(
-                `http://localhost:8081/api/games/${gameId}/reviews`
+                `${VITE_QUESTZING_API_URL}/api/games/${gameId}/reviews`
             )
             console.log('Reviews from API:', response.data)
             setReviews(response.data)
@@ -44,7 +45,7 @@ const ReviewList = ({ gameId, gameName }: ReviewProps) => {
     const handleDeleteClick = async (reviewId: number) => {
         try {
             const response = await axios.delete(
-                `http://localhost:8081/api/games/${gameId}/reviews/${reviewId}`
+                `${VITE_QUESTZING_API_URL}/api/games/${gameId}/reviews/${reviewId}`
             )
             if (response.status === 200) {
                 setReviews((prevReviews) =>
@@ -86,6 +87,7 @@ const ReviewList = ({ gameId, gameName }: ReviewProps) => {
                                     <h2 className="text-xl font-semibold flex items-center">
                                         {review.user_img && (
                                             <img
+                                                // @ts-expect-error - need to revisit .data error when time
                                                 src={`data:image/png;base64,${btoa(String.fromCharCode(...new Uint8Array(review.user_img.data)))}`}
                                                 alt={`${review.user_name}'s avatar`}
                                                 className="w-12 h-12 border-2 bg-q rounded-full mr-2"

@@ -1,8 +1,8 @@
-import React from 'react'
 import axios from 'axios'
 import { useContext, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../App'
+import { VITE_QUESTZING_API_URL } from '../../services/api-client'
 
 const LoginPage = () => {
     const navigate = useNavigate()
@@ -18,7 +18,7 @@ const LoginPage = () => {
     const login = async () => {
         try {
             const response = await axios.post(
-                'http://localhost:8081/login',
+                `${VITE_QUESTZING_API_URL}/login`,
                 {
                     user_name: username,
                     user_password: password,

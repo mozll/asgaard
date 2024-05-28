@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { getQuizGamesList } from '../../../services/api-client'
 import GameCard from '../GameCard/GameCard'
 import { Game } from '../../../services/api-client'

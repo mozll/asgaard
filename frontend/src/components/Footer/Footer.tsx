@@ -1,11 +1,10 @@
 import '../../styles.css'
 import FooterMenu from './FooterMenu'
-import React from 'react'
 
 function Footer() {
     const navItems = [
         { link: '/games', title: 'Games' },
-        { link: '/news', title: 'News' },
+        // { link: '/news', title: 'News' },
         { link: '/faq', title: 'FAQ' },
     ]
     return (

@@ -1,6 +1,7 @@
-import React, { useState, FormEvent, ChangeEvent } from 'react'
+import { useState, FormEvent, ChangeEvent } from 'react'
 import axios from 'axios'
 import ForumList from './ForumList'
+import { VITE_QUESTZING_API_URL } from '../../../services/api-client'
 
 interface ForumGameProps {
     gameId: number
@@ -25,7 +26,7 @@ const ForumGame = ({ gameId, gameName }: ForumGameProps) => {
 
         try {
             const response = await axios.post(
-                `http://localhost:8081/api/games/${gameId}/forum_posts`,
+                `${VITE_QUESTZING_API_URL}/api/games/${gameId}/forum_posts`,
                 { post_content: forumPost, post_title: forumTitle } // this means we send the forumPost from here to our backend as post_content
             )
 
