@@ -75,6 +75,9 @@ const LoginPage = () => {
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>
+                        <h1 className="text-qError100 mt-4 justify-center flex mx-auto">
+                            {loginMessage}
+                        </h1>
                         <div className="">
                             <button
                                 className="mt-4 w-full bg-qPrimary100 transition text-qDark100 py-2 px-4 rounded-full font-medium hover:bg-qPrimary300"
@@ -93,9 +96,8 @@ const LoginPage = () => {
                             Create an account
                         </NavLink>
                     </div>
-                </div>
+                </div>{' '}
             </div>
-            <h1>{loginMessage}</h1>
         </div>
     )
 }
