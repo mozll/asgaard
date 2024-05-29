@@ -12,7 +12,7 @@ interface FooterMenuProps {
 
 const FooterMenu = ({ navItems }: FooterMenuProps) => {
     return (
-        <div className="flex justify-center mt-8 p-8 bg-qDark200">
+        <div className="flex justify-center mt-8 p-8 bg-qDark200 ">
             <nav className="flex gap-8 text-lg">
                 {navItems.map((navItem, index) => (
                     <NavLink key={index} to={navItem.link}>

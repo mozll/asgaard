@@ -50,7 +50,7 @@ const LoginPage = () => {
 
     return (
         <div>
-            <div className="flex justify-center bg-qDark200 mx-auto mt-32 w-2/5 rounded-lg">
+            <div className="flex justify-center bg-qDark200 mx-auto mt-32 w-full sm:w-2/5 rounded-lg">
                 <div className="flex flex-col justify-center py-20 ">
                     <form
                         action=""

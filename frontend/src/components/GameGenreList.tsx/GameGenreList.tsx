@@ -128,15 +128,18 @@ const GameGenreList = () => {
                         ))}
                     </select>
 
-                    <h1 className="mx-8 sm:mx-16 mt-8 font-bold text-lg">
-                        Results for &quot;{genreSlug}&quot; on{' '}
-                        {selectedPlatform?.name || 'All Platforms'}
-                    </h1>
-                    <ul className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 mt-4 mx-8 sm:mx-16">
-                        {filteredGames.map((game) => (
-                            <GameCard key={game.id} {...game} />
-                        ))}
-                    </ul>
+                    <div className="mx-8 sm:mx-16">
+                        <h1 className=" mt-8 font-bold text-lg">
+                            Results for &quot;{genreSlug}&quot; on{' '}
+                            {selectedPlatform?.name || 'All Platforms'}
+                        </h1>
+
+                        <ul className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 mt-4">
+                            {filteredGames.map((game) => (
+                                <GameCard key={game.id} {...game} />
+                            ))}
+                        </ul>
+                    </div>
                 </div>
             )}
         </div>

@@ -34,7 +34,7 @@ const GameCard = ({
             <Link to={`/game/${id}`}>
                 <img
                     src={background_image ? background_image : defaultImage}
-                    alt="skyrim image"
+                    alt={name}
                     className="w-full h-48 object-cover rounded-t-md"
                 />
                 <h4 className="text-xl font-bold mx-2 truncate">{name}</h4>
