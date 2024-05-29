@@ -86,7 +86,7 @@ const HomePage = () => {
     return (
         <>
             <TopTagsBar />
-            <div className="ml-16">
+            <div className="ml-8 sm:ml-16">
                 <h1 className="mt-8 font-bold">Highest Rated On Metacritic</h1>
                 <SwiperContainer games={topMetacriticGames} />
 

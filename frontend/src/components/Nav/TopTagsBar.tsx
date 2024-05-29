@@ -39,9 +39,9 @@ const TopTagsBar = () => {
 
     return (
         <div>
-            <ul className="justify-center font-light flex flex-wrap lg:mx-64 mx-20">
+            <ul className="justify-center font-light flex flex-wrap mx-8 sm:mx-14 gap-2 my-5">
                 {genres.map((genre) => (
-                    <li key={genre} className="flex items-center mr-4 mb-2">
+                    <li key={genre} className="flex items-center mb-2">
                         <button
                             onClick={() => handleTagClick(genre)}
                             className={`text-xs bg-qDark300 p-2 rounded-xl hover:bg-qPrimary300 font-normal hover:text-qDark200 transition-colors ${

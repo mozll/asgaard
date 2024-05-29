@@ -28,7 +28,7 @@ const Result = ({ answers }: ResultProps) => {
 
     return (
         <div>
-            <h2 className="mx-16 mt-8 font-bold">
+            <h2 className="mx-8 sm:mx-16 mt-8 font-bold">
                 Based on your answers, we recommend:
             </h2>
             {isLoading ? (
@@ -36,7 +36,7 @@ const Result = ({ answers }: ResultProps) => {
             ) : (
                 <div>
                     {' '}
-                    <ul className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 mt-4 mx-16">
+                    <ul className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 mt-4 mx-8 sm:mx-16">
                         {recommendedGames.map((game) => (
                             <GameCard key={game.id} {...game} />
                         ))}

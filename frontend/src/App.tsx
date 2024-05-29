@@ -42,8 +42,8 @@ function App() {
     const navItems = [
         { link: '/', title: 'Games' },
         // { link: '/news', title: 'News' },
+        { link: '/gamerecommender', title: 'Recommender' },
         { link: '/faq', title: 'FAQ' },
-        { link: '/gamerecommender', title: 'Game Recommender' },
     ]
 
     useEffect(() => {
