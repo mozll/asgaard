@@ -51,8 +51,12 @@ const LoginPage = () => {
     return (
         <div>
             <div className="flex justify-center bg-qDark200 mx-auto mt-32 w-full sm:w-2/5 rounded-lg">
-                <div className="flex flex-col justify-center py-20 ">
+                <div className="flex flex-col justify-center py-10 ">
+                    <h1 className="flex justify-center font-bold text-xl">
+                        Login to your account
+                    </h1>
                     <form
+                        className="mt-4"
                         action=""
                         onSubmit={(e) => {
                             e.preventDefault()
@@ -91,7 +95,7 @@ const LoginPage = () => {
                     <div>
                         <NavLink
                             to="/signup"
-                            className="hover:underline mt-2 flex justify-center text-sm"
+                            className="hover:underline mt-4 flex justify-center text-sm"
                         >
                             Create an account
                         </NavLink>

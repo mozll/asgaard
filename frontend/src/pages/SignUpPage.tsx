@@ -63,8 +63,11 @@ const SignUpPage = () => {
 
     return (
         <div className="flex justify-center bg-qDark200 mx-auto mt-32 w-full sm:w-2/5 rounded-lg">
-            <div className="flex flex-col justify-center py-20">
-                <form className="mx-8 sm:mx-16">
+            <div className="flex flex-col justify-center py-10">
+                <h1 className="flex justify-center font-bold text-xl">
+                    Create account
+                </h1>
+                <form className="mx-8 sm:mx-16 mt-4">
                     <div className="mt-4">
                         <p className="text-sm">Email</p>
                         <input
@@ -113,7 +116,7 @@ const SignUpPage = () => {
                     )}
                     <NavLink
                         to="/login"
-                        className="hover:underline mt-8 flex justify-center text-sm"
+                        className="hover:underline mt-4 flex justify-center text-sm"
                     >
                         Already have an account?
                     </NavLink>
