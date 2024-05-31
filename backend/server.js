@@ -66,6 +66,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // express session
 app.use(
   session({
+    store: new RedisStore({ client: redisClient }), // attempt to fix backend memory crash
     name: "nameOfCookieThatStoresSessionID",
     secret: "longRandomHash",
     resave: false,
