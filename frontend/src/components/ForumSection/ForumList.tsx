@@ -159,7 +159,7 @@ const ForumList = ({ gameId, gameName }: ForumListProps) => {
                                             postId={post.forum_post_id}
                                         />
 
-                                        {/* Form for adding a new comment */}
+                                        {/* form for adding a new comment */}
                                         <form
                                             onSubmit={(event) => {
                                                 event.preventDefault()

@@ -84,8 +84,8 @@ app.use(
 //   return res.json("from backend");
 // });
 
-// api call to get everything from the users table
-app.get("/users", (req, res) => {
+// api call to get everything from the users table, used for initial testing
+app.get("/api/users", (req, res) => {
   const sql = "SELECT * FROM users";
   db.query(sql, (err, data) => {
     if (err) return res.json(err);
@@ -95,7 +95,7 @@ app.get("/users", (req, res) => {
 
 // API call to register a user, with valdiation
 app.post(
-  "/register",
+  "/api/register",
   [
     // Validate is to make sure the data we get meets the criteria we want, such as name doesnt already exist or passwords must be this long.
     // Sanitize is cleaning the data we get to make sure it is not harmful
@@ -154,7 +154,6 @@ app.post(
 
             try {
               // generating a unique avatar image URL for the user using RoboHash
-              // We use the username's MD5 hash to create a unique image
               const imagePath =
                 "https://robohash.org/" +
                 crypto.createHash("md5").update(user_name).digest("hex");
@@ -174,7 +173,7 @@ app.post(
                 saltRounds
               );
 
-              // Insert the new user into the database
+              // inserting the new user into the database
               db.query(
                 "INSERT INTO users (user_email, user_name, user_password, user_sign_up_date, user_img) VALUES (?, ?, ?, NOW(), ?)",
                 [user_email, user_name, hashedPassword, user_img],
@@ -190,7 +189,7 @@ app.post(
               console.error("Error registering user:", error);
               res
                 .status(500)
-                .json({ error: "An error occurred during registration" }); // Generic error for security
+                .json({ error: "An error occurred during registration" });
             }
           }
         );
@@ -199,8 +198,32 @@ app.post(
   }
 );
 
+app.post("/api/update-username", (req, res) => {
+  const { userId, newUsername } = req.body;
+
+  if (!userId || !newUsername) {
+    return res
+      .status(400)
+      .json({ error: "User ID and new username are required" });
+  }
+
+  const query = "UPDATE users SET user_name = ? WHERE user_id = ?";
+  db.query(query, [newUsername, userId], (err, results) => {
+    if (err) {
+      console.error("Error updating username:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+
+    // Check if any rows were affected by the update
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({ message: "Username updated successfully" });
+  });
+});
 // login with user
-app.post("/login", (req, res) => {
+app.post("/api/login", (req, res) => {
   const user_name = req.body.user_name;
   const user_password = req.body.user_password;
 
@@ -251,7 +274,7 @@ app.post("/login", (req, res) => {
   );
 });
 // api to check if the user is logged in and return their session data (if available).
-app.get("/user", (req, res) => {
+app.get("/api/user", (req, res) => {
   if (req.session.user) {
     res.send({ loggedIn: true, user: req.session.user });
   } else {
@@ -259,7 +282,7 @@ app.get("/user", (req, res) => {
   }
 });
 
-app.post("/logout", (req, res) => {
+app.post("/api/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       console.error("Error destroying session:", err);
@@ -490,11 +513,11 @@ app.post("/api/forum_posts/:postId/comments", (req, res) => {
   const { postId } = req.params;
   let { comment_content } = req.body;
 
-  // Input Validation
+  // validating
   if (!comment_content || isNaN(postId)) {
     return res.status(400).json({ error: "Invalid data provided" });
   }
-  // Sanitizing
+  // sanitizing
   comment_content = db.escape(comment_content);
 
   const userId = req.session && req.session.user ? req.session.user.id : null;
@@ -519,9 +542,9 @@ app.post("/api/forum_posts/:postId/comments", (req, res) => {
 
 // Gets comments for a forum post
 app.get("/api/forum_posts/:postId/comments", (req, res) => {
-  const postId = req.params.postId; // Using postId for consistency
+  const postId = req.params.postId;
 
-  // Input Validation
+  // validating
   if (isNaN(postId)) {
     return res.status(400).json({ error: "Invalid forum post ID" });
   }

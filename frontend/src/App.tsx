@@ -50,7 +50,7 @@ function App() {
         const fetchUserData = async () => {
             try {
                 const response = await axios.get(
-                    `${VITE_QUESTZING_API_URL}/user`,
+                    `${VITE_QUESTZING_API_URL}/api/user`,
                     {
                         withCredentials: true,
                     }

@@ -94,6 +94,8 @@ const HomePage = () => {
                 <SwiperContainer games={popularGames} />
                 {featuredGame && (
                     <div className="hidden md:block">
+                        {' '}
+                        <h1 className="mt-8 font-bold">Featured Game</h1>
                         <FeaturedGameCard {...featuredGame} />
                     </div>
                 )}

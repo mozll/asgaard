@@ -10,6 +10,13 @@ interface ProfileProps {
 }
 
 const ProfilePage = ({ user }: ProfileProps) => {
+    const [activeTab, setActiveTab] = useState('Favorite Games') // favorite games is the initial tab
+    const [updatingUsername, setUpdatingUsername] = useState(false)
+    const [newUsername, setNewUsername] = useState('')
+    const [submitSuccess, setSubmitSuccess] = useState(false)
+
+    const [submitFail, setSubmitFail] = useState(false)
+
     if (!user) {
         return (
             <div className="text-lg flex justify-center">
@@ -21,11 +28,10 @@ const ProfilePage = ({ user }: ProfileProps) => {
         )
     }
 
-    const [activeTab, setActiveTab] = useState('Favorite Games') // favorite games is the initial tab
     const handleLogout = async () => {
         try {
             const response = await axios.post(
-                `${VITE_QUESTZING_API_URL}/logout`
+                `${VITE_QUESTZING_API_URL}/api/logout`
             )
             if (response.status === 200) {
                 window.location.href = '/' // reroutes us to front page
@@ -37,14 +43,78 @@ const ProfilePage = ({ user }: ProfileProps) => {
         }
     }
 
+    const handleUpdateUsername = async () => {
+        try {
+            const response = await axios.post(
+                `${VITE_QUESTZING_API_URL}/api/update-username`,
+                { userId: user.id, newUsername }
+            )
+
+            if (response.status === 200) {
+                setSubmitSuccess(true)
+                setSubmitFail(false)
+                user.name = newUsername
+                setNewUsername(newUsername)
+            } else {
+                setSubmitFail(true)
+            }
+        } catch (error) {
+            console.error('Error updating username', error)
+            setSubmitFail(true)
+        } finally {
+            setUpdatingUsername(false)
+        }
+    }
+
     return (
         <div className="profile-container">
-            <button className="flex ml-auto mr-16" onClick={handleLogout}>
+            <button
+                className="flex ml-auto mr-16 hover:underline-offset-8 hover:underline"
+                onClick={handleLogout}
+            >
                 Logout
             </button>
-            <h2 className="text-2xl font-bold mt-20 flex justify-center">
-                Welcome, {user.name}!
-            </h2>
+            <div className="flex flex-col justify-center items-center mt-20 gap-2">
+                {!updatingUsername ? (
+                    <h2 className="text-2xl font-bold flex">
+                        Welcome, {user.name}!
+                    </h2>
+                ) : (
+                    <form
+                        className="flex justify-center items-center gap-2"
+                        onSubmit={(e) => {
+                            e.preventDefault()
+                            handleUpdateUsername()
+                        }}
+                    >
+                        <h2 className="text-2xl font-bold flex">Welcome,</h2>
+                        <input
+                            className="text-qDark100 p-1"
+                            type="text"
+                            value={newUsername}
+                            onChange={(e) => setNewUsername(e.target.value)}
+                        />
+                        <button type="submit">Save</button>
+                    </form>
+                )}
+                <button
+                    className="hover:underline-offset-8 hover:underline"
+                    onClick={() => setUpdatingUsername(!updatingUsername)}
+                >
+                    Change username
+                </button>
+
+                {submitSuccess && (
+                    <p className="text-qPrimary100">
+                        Username updated successfully!
+                    </p>
+                )}
+                {submitFail && (
+                    <p className="text-qError100">
+                        Failed to update username. Please try again.
+                    </p>
+                )}
+            </div>
             <div className="profile-picture flex justify-center mt-8">
                 <img
                     src={`data:image/png;base64,${user.img}`}

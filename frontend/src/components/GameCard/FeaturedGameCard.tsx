@@ -24,7 +24,7 @@ const FeaturedGameCard = ({
     }
 
     return (
-        <div id={id.toString()} className={`flex w-full rounded-md mt-8`}>
+        <div id={id.toString()} className={`flex w-full rounded-md `}>
             <div className="w-6/12">
                 <Link to={`/game/${id}`}>
                     <img

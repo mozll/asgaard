@@ -1,4 +1,4 @@
-import { SetStateAction, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, NavLink } from 'react-router-dom'
 import axios from 'axios'
 import { VITE_QUESTZING_API_URL } from '../../services/api-client'
@@ -15,7 +15,7 @@ const SignUpPage = () => {
     const register = async () => {
         try {
             const response = await axios.post(
-                `${VITE_QUESTZING_API_URL}/register`,
+                `${VITE_QUESTZING_API_URL}/api/register`,
                 {
                     user_email: emailReg,
                     user_name: usernameReg,
@@ -85,7 +85,7 @@ const SignUpPage = () => {
                             }}
                         />
                     </div>
-                    <div className="mt-4">
+                    <div className="mt-4 ">
                         <p className="text-sm">Password</p>
                         <input
                             className="bg-qDark400 w-full rounded-md px-3 py-2"

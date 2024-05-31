@@ -98,11 +98,11 @@ const Navbar = ({ navItems, user }: NavbarProps) => {
                 </NavLink>
             </div>
             <div className="flex-grow flex items-center gap-10 ">
-                {/* Search input and results */}
-                <div className="relative flex-grow md:flex-grow-0 sm:order-2 ">
+                {/* search input and results */}
+                <div className="relative flex-grow md:flex-grow-0 sm:order-2">
                     <input
                         ref={inputRef}
-                        className="text-qDark200 rounded-md w-full px-4 py-1 mb-1"
+                        className="text-qDark200 rounded-md w-full px-4 py-1 mb-1 "
                         type="text"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}

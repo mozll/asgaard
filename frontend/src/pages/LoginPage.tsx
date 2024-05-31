@@ -18,7 +18,7 @@ const LoginPage = () => {
     const login = async () => {
         try {
             const response = await axios.post(
-                `${VITE_QUESTZING_API_URL}/login`,
+                `${VITE_QUESTZING_API_URL}/api/login`,
                 {
                     user_name: username,
                     user_password: password,
@@ -66,7 +66,7 @@ const LoginPage = () => {
                                 onChange={(e) => setUsername(e.target.value)}
                             />
                         </div>
-                        <div className="mt-4">
+                        <div className="mt-4 w-full">
                             <p className="text-sm">Password</p>
                             <input
                                 className="bg-qDark400 rounded-md px-3 py-2"
