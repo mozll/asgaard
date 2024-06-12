@@ -12,9 +12,9 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 
-const app = express();
-
 require("dotenv").config();
+
+const app = express();
 
 const dbHost = process.env.DB_HOST || "localhost";
 const dbUser = process.env.DB_USER || "root";
@@ -111,6 +111,14 @@ app.post(
     body("user_password")
       .isLength({ min: 6 })
       .withMessage("Password must be at least 6 characters long")
+      .matches(/\d/)
+      .withMessage("Password must contain a number")
+      .matches(/[a-z]/)
+      .withMessage("Password must contain a lowercase letter")
+      .matches(/[A-Z]/)
+      .withMessage("Password must contain an uppercase letter")
+      .matches(/[!@#$%^&*(),.?":{}|<>]/)
+      .withMessage("Password must contain a special character")
       .trim()
       .escape(),
   ],
@@ -222,6 +230,7 @@ app.post("/api/update-username", (req, res) => {
     res.status(200).json({ message: "Username updated successfully" });
   });
 });
+
 // login with user
 app.post("/api/login", (req, res) => {
   const user_name = req.body.user_name;
