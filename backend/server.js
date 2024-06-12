@@ -3,6 +3,7 @@ const mysql = require("mysql");
 const cors = require("cors");
 const axios = require("axios");
 
+const { body, validationResult } = require("express-validator");
 const crypto = require("crypto");
 const bcryptjs = require("bcryptjs");
 const saltRounds = 10;
@@ -11,9 +12,9 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 
-const app = express();
-
 require("dotenv").config();
+
+const app = express();
 
 const dbHost = process.env.DB_HOST || "localhost";
 const dbUser = process.env.DB_USER || "root";
@@ -83,8 +84,8 @@ app.use(
 //   return res.json("from backend");
 // });
 
-// api call to get everything from the users table
-app.get("/users", (req, res) => {
+// api call to get everything from the users table, used for initial testing
+app.get("/api/users", (req, res) => {
   const sql = "SELECT * FROM users";
   db.query(sql, (err, data) => {
     if (err) return res.json(err);
@@ -92,43 +93,146 @@ app.get("/users", (req, res) => {
   });
 });
 
-// API call to register a user
-app.post("/register", async (req, res) => {
-  const { user_email, user_name, user_password } = req.body;
+// API call to register a user, with valdiation
+app.post(
+  "/api/register",
+  [
+    // Validate is to make sure the data we get meets the criteria we want, such as name doesnt already exist or passwords must be this long.
+    // Sanitize is cleaning the data we get to make sure it is not harmful
+    body("user_email")
+      .isEmail()
+      .withMessage("Please enter a valid email address")
+      .normalizeEmail(),
+    body("user_name")
+      .isLength({ min: 3 })
+      .withMessage("Username must be at least 3 characters long")
+      .trim()
+      .escape(),
+    body("user_password")
+      .isLength({ min: 6 })
+      .withMessage("Password must be at least 6 characters long")
+      .matches(/\d/)
+      .withMessage("Password must contain a number")
+      .matches(/[a-z]/)
+      .withMessage("Password must contain a lowercase letter")
+      .matches(/[A-Z]/)
+      .withMessage("Password must contain an uppercase letter")
+      .matches(/[!@#$%^&*(),.?":{}|<>]/)
+      .withMessage("Password must contain a special character")
+      .trim()
+      .escape(),
+  ],
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-  try {
-    // generate RoboHash URL which is an image
-    const imagePath =
-      "https://robohash.org/" +
-      crypto.createHash("md5").update(user_name).digest("hex");
+    const { user_email, user_name, user_password } = req.body;
 
-    // fetch image data
-    const response = await axios.get(imagePath, {
-      responseType: "arraybuffer",
-    });
-    const user_img = Buffer.from(response.data, "binary");
-
-    // hash user password
-    const hashedPassword = await bcryptjs.hash(user_password, saltRounds);
-
+    // checking if the email already exists
     db.query(
-      "INSERT INTO users (user_email, user_name, user_password, user_sign_up_date, user_img) VALUES (?, ?, ?, NOW(), ?)",
-      [user_email, user_name, hashedPassword, user_img],
-      (err, result) => {
+      "SELECT 1 FROM users WHERE user_email = ?",
+      [user_email],
+      async (err, emailResults) => {
         if (err) {
-          console.log(err);
+          console.error("Database error (email check):", err);
           return res.status(500).json({ error: "Database error" });
         }
-        res.json({ message: "User registered successfully" });
+        if (emailResults.length > 0) {
+          return res
+            .status(400)
+            .json({ error: "Email address is already registered" });
+        }
+
+        // checking if the username already exists
+        db.query(
+          "SELECT 1 FROM users WHERE user_name = ?",
+          [user_name],
+          async (err, usernameResults) => {
+            if (err) {
+              console.error("Database error (username check):", err);
+              return res.status(500).json({ error: "Database error" });
+            }
+            if (usernameResults.length > 0) {
+              return res
+                .status(400)
+                .json({ error: "Username is already taken" });
+            }
+
+            try {
+              // generating a unique avatar image URL for the user using RoboHash
+              const imagePath =
+                "https://robohash.org/" +
+                crypto.createHash("md5").update(user_name).digest("hex");
+
+              // fetch the raw image data from the generated RoboHash URL
+              const response = await axios.get(imagePath, {
+                responseType: "arraybuffer",
+              });
+
+              // converting the raw image data (arraybuffer) into a Buffer object (binary format)
+              // this Buffer will be stored in the database along with other user information
+              const user_img = Buffer.from(response.data, "binary");
+
+              // hash user password
+              const hashedPassword = await bcryptjs.hash(
+                user_password,
+                saltRounds
+              );
+
+              // inserting the new user into the database
+              db.query(
+                "INSERT INTO users (user_email, user_name, user_password, user_sign_up_date, user_img) VALUES (?, ?, ?, NOW(), ?)",
+                [user_email, user_name, hashedPassword, user_img],
+                (err, result) => {
+                  if (err) {
+                    console.error("Database error (user insert):", err);
+                    return res.status(500).json({ error: "Database error" });
+                  }
+                  res.json({ message: "User registered successfully" });
+                }
+              );
+            } catch (error) {
+              console.error("Error registering user:", error);
+              res
+                .status(500)
+                .json({ error: "An error occurred during registration" });
+            }
+          }
+        );
       }
     );
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Error fetching image or hashing password" });
   }
+);
+
+app.post("/api/update-username", (req, res) => {
+  const { userId, newUsername } = req.body;
+
+  if (!userId || !newUsername) {
+    return res
+      .status(400)
+      .json({ error: "User ID and new username are required" });
+  }
+
+  const query = "UPDATE users SET user_name = ? WHERE user_id = ?";
+  db.query(query, [newUsername, userId], (err, results) => {
+    if (err) {
+      console.error("Error updating username:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+
+    // Check if any rows were affected by the update
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({ message: "Username updated successfully" });
+  });
 });
 
-app.post("/login", (req, res) => {
+// login with user
+app.post("/api/login", (req, res) => {
   const user_name = req.body.user_name;
   const user_password = req.body.user_password;
 
@@ -156,7 +260,7 @@ app.post("/login", (req, res) => {
         const isMatch = await bcryptjs.compare(
           user_password,
           user.user_password
-        ); // Compare passwords correctly using await
+        ); // Compares passwords using await
         if (isMatch) {
           const userSessionData = {
             id: user.user_id,
@@ -179,7 +283,7 @@ app.post("/login", (req, res) => {
   );
 });
 // api to check if the user is logged in and return their session data (if available).
-app.get("/user", (req, res) => {
+app.get("/api/user", (req, res) => {
   if (req.session.user) {
     res.send({ loggedIn: true, user: req.session.user });
   } else {
@@ -187,7 +291,7 @@ app.get("/user", (req, res) => {
   }
 });
 
-app.post("/logout", (req, res) => {
+app.post("/api/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       console.error("Error destroying session:", err);
@@ -402,7 +506,7 @@ app.delete("/api/games/:gameId/forum_posts/:forumPostId", (req, res) => {
       return res.status(500).json({ error: "Failed to delete forum post" });
     }
 
-    // Checks if any rows were affected
+    // checking if any rows were affected
     if (result.affectedRows === 0) {
       return res.status(404).json({
         error: "Forum post not found or you are not authorized to delete it",
@@ -413,16 +517,16 @@ app.delete("/api/games/:gameId/forum_posts/:forumPostId", (req, res) => {
   });
 });
 
-// Creating a comment on a forum post
+// creating a comment on a forum post
 app.post("/api/forum_posts/:postId/comments", (req, res) => {
   const { postId } = req.params;
   let { comment_content } = req.body;
 
-  // Input Validation
+  // validating
   if (!comment_content || isNaN(postId)) {
     return res.status(400).json({ error: "Invalid data provided" });
   }
-  // Sanitizing
+  // sanitizing
   comment_content = db.escape(comment_content);
 
   const userId = req.session && req.session.user ? req.session.user.id : null;
@@ -447,9 +551,9 @@ app.post("/api/forum_posts/:postId/comments", (req, res) => {
 
 // Gets comments for a forum post
 app.get("/api/forum_posts/:postId/comments", (req, res) => {
-  const postId = req.params.postId; // Using postId for consistency
+  const postId = req.params.postId;
 
-  // Input Validation
+  // validating
   if (isNaN(postId)) {
     return res.status(400).json({ error: "Invalid forum post ID" });
   }

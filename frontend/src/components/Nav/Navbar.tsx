@@ -87,18 +87,22 @@ const Navbar = ({ navItems, user }: NavbarProps) => {
     }
 
     return (
-        <div className="flex  justify-between mx-4 md:mx-16 my-8 items-center">
-            <div className="bg-qPrimary200 block :hidden">
+        <div className="flex justify-between mx-8 sm:mx-16 my-8 items-center">
+            <div className="">
                 <NavLink to="/">
-                    <img src={QuestzingLogo} alt="Questzing logo" />
+                    <img
+                        className="hidden lg:block h-7 mr-8"
+                        src={QuestzingLogo}
+                        alt="Questzing logo"
+                    />
                 </NavLink>
             </div>
-            <div className="flex-grow flex  justify-between items-center gap-10">
-                {/* Search input and results */}
-                <div className="relative bg-qSecondary200 flex-grow md:flex-grow-0 sm:order-2">
+            <div className="flex-grow flex items-center gap-10 ">
+                {/* search input and results */}
+                <div className="relative flex-grow md:flex-grow-0 sm:order-2">
                     <input
                         ref={inputRef}
-                        className="text-qDark200 rounded-md px-4 py-1 mb-1 w-48 md:w-auto"
+                        className="text-qDark200 rounded-md w-full px-4 py-1 mb-1 "
                         type="text"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -107,7 +111,7 @@ const Navbar = ({ navItems, user }: NavbarProps) => {
                     {showDropdown && searchResults.length > 0 && (
                         <div
                             ref={dropdownRef}
-                            className="absolute  top-full left-0 bg-white rounded-md shadow-md z-10 w-full max-h-64 overflow-y-auto text-black"
+                            className="absolute top-full left-0 bg-white rounded-md shadow-md z-10 w-full max-h-64 overflow-y-auto text-black"
                         >
                             <ul>
                                 {searchResults.map((game) => (
@@ -125,14 +129,17 @@ const Navbar = ({ navItems, user }: NavbarProps) => {
                 </div>
                 {/* Hamburger button for small screens */}
                 <button
-                    className="block lg:hidden text-2xl order-3"
+                    className="block md:hidden text-2xl order-3"
                     onClick={handleToggleMenu}
                 >
                     &#9776; {/* Hamburger icon */}
                 </button>
                 {/* Navbar links and user profile/login */}
                 <nav
-                    className={`flex-col ${showMenu ? 'flex' : 'hidden'} bg-qSecondary200 mx-auto md:flex md:flex-row gap-10 text-lg absolute md:relative right-0 md:right-auto order-4 md:order-1`}
+                    className={`flex flex-col md:flex-row gap-5 md:p-0 p-4 md:gap-10 text-lg z-10 ${
+                        showMenu ? 'flex' : 'hidden md:flex'
+                    } absolute md:relative top-20 md:top-auto right-0 sm:right-20 md:right-auto order-4 md:order-1 sm:mx-auto
+    ${showMenu ? 'rounded bg-qDark300' : ''} `}
                 >
                     {navItems.map((navItem, index) => (
                         <NavLink
@@ -149,7 +156,8 @@ const Navbar = ({ navItems, user }: NavbarProps) => {
                             className="text-lg"
                             onClick={() => setShowMenu(false)}
                         >
-                            {user.name}
+                            {/* {user.name} */}
+                            Profile
                         </NavLink>
                     ) : (
                         <NavLink

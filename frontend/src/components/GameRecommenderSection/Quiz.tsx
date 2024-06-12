@@ -30,6 +30,7 @@ const Quiz = () => {
                 'Engaging in competitive sports scenarios',
             ],
         },
+        // additional questions
         {
             // question index 1 in the api client
             id: 2,

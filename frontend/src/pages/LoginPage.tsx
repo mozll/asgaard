@@ -18,7 +18,7 @@ const LoginPage = () => {
     const login = async () => {
         try {
             const response = await axios.post(
-                `${VITE_QUESTZING_API_URL}/login`,
+                `${VITE_QUESTZING_API_URL}/api/login`,
                 {
                     user_name: username,
                     user_password: password,
@@ -50,9 +50,13 @@ const LoginPage = () => {
 
     return (
         <div>
-            <div className="flex justify-center bg-qDark200 mx-auto mt-32 w-2/5 rounded-lg">
-                <div className="flex flex-col justify-center py-20 ">
+            <div className="flex justify-center bg-qDark200 mx-auto mt-32 w-full sm:w-2/5 rounded-lg">
+                <div className="flex flex-col justify-center py-10 ">
+                    <h1 className="flex justify-center font-bold text-xl">
+                        Login to your account
+                    </h1>
                     <form
+                        className="mt-4"
                         action=""
                         onSubmit={(e) => {
                             e.preventDefault()
@@ -66,7 +70,7 @@ const LoginPage = () => {
                                 onChange={(e) => setUsername(e.target.value)}
                             />
                         </div>
-                        <div className="mt-4">
+                        <div className="mt-4 w-full">
                             <p className="text-sm">Password</p>
                             <input
                                 className="bg-qDark400 rounded-md px-3 py-2"
@@ -75,6 +79,9 @@ const LoginPage = () => {
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>
+                        <h1 className="text-qError100 mt-4 justify-center flex mx-auto">
+                            {loginMessage}
+                        </h1>
                         <div className="">
                             <button
                                 className="mt-4 w-full bg-qPrimary100 transition text-qDark100 py-2 px-4 rounded-full font-medium hover:bg-qPrimary300"
@@ -88,14 +95,13 @@ const LoginPage = () => {
                     <div>
                         <NavLink
                             to="/signup"
-                            className="hover:underline mt-2 flex justify-center text-sm"
+                            className="hover:underline mt-4 flex justify-center text-sm"
                         >
                             Create an account
                         </NavLink>
                     </div>
-                </div>
+                </div>{' '}
             </div>
-            <h1>{loginMessage}</h1>
         </div>
     )
 }

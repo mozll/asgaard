@@ -42,15 +42,15 @@ function App() {
     const navItems = [
         { link: '/', title: 'Games' },
         // { link: '/news', title: 'News' },
+        { link: '/gamerecommender', title: 'Recommender' },
         { link: '/faq', title: 'FAQ' },
-        { link: '/gamerecommender', title: 'Game Recommender' },
     ]
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
                 const response = await axios.get(
-                    `${VITE_QUESTZING_API_URL}/user`,
+                    `${VITE_QUESTZING_API_URL}/api/user`,
                     {
                         withCredentials: true,
                     }

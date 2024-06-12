@@ -10,13 +10,13 @@ interface QuestionProps {
 }
 
 const Question = ({ question, onAnswer }: QuestionProps) => (
-    <div className="">
-        <h2 className="mx-16 mt-8 font-bold">{question.text}</h2>
-        <ul className="mx-16">
+    <div className="flex flex-col mx-8 sm:mx-16">
+        <h2 className="mt-8 font-bold">{question.text}</h2>
+        <ul className="">
             {question.options.map((option, index) => (
-                <li key={index}>
+                <li key={index} className="mt-4">
                     <button
-                        className="border-2 rounded-md mt-4 w-1/2 p-4 hover:bg-qDark300 "
+                        className="border-2 rounded-md w-full p-4 hover:bg-qDark300"
                         onClick={() => onAnswer(index)}
                     >
                         {option}

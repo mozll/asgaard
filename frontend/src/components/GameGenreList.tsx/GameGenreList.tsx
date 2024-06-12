@@ -107,9 +107,9 @@ const GameGenreList = () => {
     return (
         <div>
             {isLoading ? (
-                <div>Loading games...</div>
+                <div className="mx-8 sm:mx-16 mt-8">Loading games...</div>
             ) : error ? (
-                <div>{error}</div>
+                <div className="mx-8 sm:mx-16 mt-8">{error}</div>
             ) : (
                 <div>
                     <TopTagsBar />
@@ -118,7 +118,7 @@ const GameGenreList = () => {
                     <select
                         value={selectedPlatform?.id || ''}
                         onChange={handlePlatformChange}
-                        className="block ml-16 px-4 py-2 text-base text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        className="block mx-8 sm:mx-16 px-4 py-2 text-base text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none"
                     >
                         <option value="allPlatforms">All Platforms</option>
                         {platforms.map((platform) => (
@@ -128,15 +128,18 @@ const GameGenreList = () => {
                         ))}
                     </select>
 
-                    <h1 className="ml-16 mt-10 font-bold text-lg">
-                        Results for &quot;{genreSlug}&quot; on{' '}
-                        {selectedPlatform?.name || 'All Platforms'}
-                    </h1>
-                    <ul className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 mt-4 mx-16">
-                        {filteredGames.map((game) => (
-                            <GameCard key={game.id} {...game} />
-                        ))}
-                    </ul>
+                    <div className="mx-8 sm:mx-16">
+                        <h1 className=" mt-8 font-bold text-lg">
+                            Results for &quot;{genreSlug}&quot; on{' '}
+                            {selectedPlatform?.name || 'All Platforms'}
+                        </h1>
+
+                        <ul className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 mt-4">
+                            {filteredGames.map((game) => (
+                                <GameCard key={game.id} {...game} />
+                            ))}
+                        </ul>
+                    </div>
                 </div>
             )}
         </div>
