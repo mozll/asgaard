@@ -4,6 +4,7 @@ const cors = require("cors");
 const axios = require("axios");
 
 const { body, validationResult } = require("express-validator");
+const sanitizeHtml = require("sanitize-html");
 const crypto = require("crypto");
 const bcryptjs = require("bcryptjs");
 const saltRounds = 10;
@@ -97,8 +98,8 @@ app.get("/api/users", (req, res) => {
 app.post(
   "/api/register",
   [
-    // Validate is to make sure the data we get meets the criteria we want, such as name doesnt already exist or passwords must be this long.
-    // Sanitize is cleaning the data we get to make sure it is not harmful
+    // Validate is to make sure the data we get meets the rules ive set, such as name doesnt already exist or passwords must be this long.
+    // Sanitize is cleaning the data i get to make sure it is not harmful
     body("user_email")
       .isEmail()
       .withMessage("Please enter a valid email address")
@@ -471,11 +472,19 @@ app.get("/api/games/:gameId/forum_posts", (req, res) => {
       console.error("Error fetching forum posts:", err);
       res.status(500).json({ error: "Failed to fetch forum posts" });
     } else {
-      const cleanedPosts = rows.map((post) => ({
-        ...post,
-        forum_post_title: post.forum_post_title.replace(/^'|'$/g, ""),
-        forum_post_post: post.forum_post_post.replace(/^'|'$/g, ""),
-      }));
+      const cleanedPosts = rows.map((post) => {
+        let cleanedTitle = post.forum_post_title.replace(/^'|'$/g, "");
+        let cleanedPost = post.forum_post_post.replace(/^'|'$/g, "");
+        // Sanitize the title and post content to prevent XSS
+        cleanedTitle = sanitizeHtml(cleanedTitle);
+        cleanedPost = sanitizeHtml(cleanedPost);
+
+        return {
+          ...post,
+          forum_post_title: cleanedTitle,
+          forum_post_post: cleanedPost,
+        };
+      });
       res.json(cleanedPosts);
     }
   });
@@ -558,22 +567,31 @@ app.get("/api/forum_posts/:postId/comments", (req, res) => {
     return res.status(400).json({ error: "Invalid forum post ID" });
   }
 
-  const sql = ` SELECT comments.*, users.user_id, users.user_name, forum_posts.forum_post_id
-  FROM comments 
-  JOIN users ON comments.comment_user_id = users.user_id 
-  JOIN forum_posts ON comments.forum_post_id = forum_posts.forum_post_id 
-  WHERE comments.forum_post_id = ?
-  ORDER BY comment_created_at DESC`;
+  const sql = `SELECT comments.*, users.user_id, users.user_name, forum_posts.forum_post_id
+               FROM comments 
+               JOIN users ON comments.comment_user_id = users.user_id 
+               JOIN forum_posts ON comments.forum_post_id = forum_posts.forum_post_id 
+               WHERE comments.forum_post_id = ?
+               ORDER BY comment_created_at DESC`;
 
   db.query(sql, [postId], (err, rows) => {
     if (err) {
       console.error("Error fetching comments:", err);
       return res.status(500).json({ error: "Database error" });
     }
-    const cleanedComments = rows.map((comment) => ({
-      ...comment,
-      comment_comment: comment.comment_comment.replace(/^'|'$/g, ""),
-    }));
+
+    const cleanedComments = rows.map((comment) => {
+      // Remove single quotes
+      let cleanedComment = comment.comment_comment.replace(/^'|'$/g, "");
+      // Sanitize the comment content to prevent XSS
+      cleanedComment = sanitizeHtml(cleanedComment);
+
+      return {
+        ...comment,
+        comment_comment: cleanedComment,
+      };
+    });
+
     res.json(cleanedComments);
   });
 });
