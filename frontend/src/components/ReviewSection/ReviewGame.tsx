@@ -36,6 +36,7 @@ const ReviewGame = ({ gameId, gameName }: ReviewGameProps) => {
                 setThumbs('neutral')
                 setBorderColor('white')
                 setSubmitSuccess(true)
+                window.location.reload()
             } else {
                 console.error('Failed to submit review:', response.statusText)
                 setSubmitFail(true)
