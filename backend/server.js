@@ -18,13 +18,13 @@ require("dotenv").config();
 const app = express();
 
 const dbHost = process.env.DB_HOST || "localhost";
-const dbUser = process.env.DB_USER || "root";
-const dbPassword = process.env.DB_PASSWORD || "";
+const dbUser = process.env.DB_USER || "postgres"; // Default user for Supabase is 'postgres'
+const dbPassword = process.env.DB_PASSWORD || ""; // Default empty password if not set
 const dbName =
   process.env.NODE_ENV === "production"
-    ? process.env.DB_DATABASE || "questzingDB"
-    : "questzing-db";
-const dbPort = process.env.DB_PORT || 3306;
+    ? process.env.DB_DATABASE || "postgres" // Use the environment variable, default to 'postgres'
+    : "questzing-db"; // Use this in development if NODE_ENV is not 'production'
+const dbPort = process.env.DB_PORT || 6543; // Default port for Supabase is 6543
 
 // create a connection a database with information to use it
 const db = mysql.createConnection({
@@ -52,6 +52,7 @@ app.use(
       "http://139.144.73.204:5173", // VPS IP with my frontend port
       "http://139.144.73.204:80", // VPS IP with my port 80
       "http://139.144.73.204",
+      "https://questzing-fe.vercel.app/",
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],

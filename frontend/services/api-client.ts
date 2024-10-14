@@ -85,7 +85,8 @@ interface Platform {
 
 const isProduction = process.env.NODE_ENV === 'production'
 const apiUrl = isProduction
-    ? 'http://139.144.73.204:8081'
+    ? // ? 'http://139.144.73.204:8081'
+      'https://questzing-be.vercel.app/'
     : 'http://localhost:8081'
 
 export const VITE_QUESTZING_API_URL = apiUrl
